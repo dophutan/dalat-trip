@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#b95e73">
+  <title>Đà Lạt · 3 ngày 2 đêm</title>
+  <style>
+    :root { --rose:#b95670; --rose-dark:#7e3148; --blush:#f9e7e5; --blush-deep:#efc5c7; --petal:#fff7f4; --paper:#fffdfb; --ink:#382b2e; --muted:#79686c; --line:#edd8d5; --moss:#657e69; --gold:#bf8252; --shadow:0 14px 36px rgba(123,61,78,.11); }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; background:radial-gradient(circle at 85% 4%,#f6d8d8 0,transparent 23rem),var(--blush); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif; font-size:16px; line-height:1.45; }
+    button,input,select { font:inherit; }
+    button { cursor:pointer; }
+    a { color:inherit; }
+    .shell { width:min(900px,100%); margin:0 auto; padding:0 16px calc(96px + env(safe-area-inset-bottom)); }
+    .page { display:none; animation:fade .2s ease; }
+    .page.active { display:block; }
+    @keyframes fade { from{opacity:.15;transform:translateY(4px)} to{opacity:1;transform:none} }
+    .hero { position:relative; isolation:isolate; overflow:hidden; margin:0 -16px 24px; padding:calc(38px + env(safe-area-inset-top)) 23px 32px; color:#fff; background:linear-gradient(135deg,#8a3c55,#c7667e 58%,#e89a9d); border-radius:0 0 34px 34px; box-shadow:0 13px 28px rgba(121,52,71,.19); }
+    .hero:before,.hero:after { content:""; position:absolute; z-index:-1; border-radius:50%; background:rgba(255,241,235,.14); }
+    .hero:before { width:290px; height:290px; top:-155px; right:-78px; }.hero:after { width:180px; height:180px; bottom:-105px; right:16%; }
+    .eyebrow { display:flex; align-items:center; gap:7px; color:#ffe9e6; font-size:.75rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
+    h1 { max-width:560px; margin:10px 0 9px; font-family:Georgia,"Times New Roman",serif; font-size:clamp(2.35rem,9vw,4.3rem); line-height:.98; letter-spacing:-.055em; }
+    .hero p { max-width:500px; margin:0; color:#fff4f1; font-size:.98rem; }
+    .trip-pills { display:flex; flex-wrap:wrap; gap:8px; margin-top:17px; }
+    .trip-pills span { padding:7px 11px; border:1px solid rgba(255,255,255,.22); border-radius:999px; background:rgba(255,255,255,.14); backdrop-filter:blur(7px); font-size:.82rem; }
+    .hero > :not(.hero-art) { position:relative; z-index:1; }.hero-art { position:absolute; right:9%; bottom:17px; z-index:0; width:96px; height:96px; opacity:.8; transform:rotate(-12deg); }
+    .hero-art span { position:absolute; width:47px; height:47px; border-radius:47px 4px 47px 4px; background:#ffd9d5; transform-origin:bottom right; box-shadow:inset -5px -5px 13px rgba(183,83,109,.13); }.hero-art span:nth-child(1){transform:rotate(12deg)}.hero-art span:nth-child(2){transform:rotate(102deg)}.hero-art span:nth-child(3){transform:rotate(192deg)}.hero-art span:nth-child(4){transform:rotate(282deg)}.hero-art i{position:absolute;top:42px;left:42px;width:13px;height:13px;border-radius:50%;background:#ffc26f;z-index:2}
+    .section-title { display:flex; align-items:end; justify-content:space-between; gap:12px; margin:30px 2px 13px; }
+    h2 { margin:0; font-family:Georgia,"Times New Roman",serif; font-size:1.62rem; line-height:1.1; letter-spacing:-.03em; }
+    .hint { margin:0; color:var(--muted); font-size:.86rem; }
+    .day-tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .day-tab { padding:11px 6px; color:var(--rose-dark); background:#fff4f1; border:1px solid #efcfce; border-radius:999px; font-weight:800; font-size:.9rem; }
+    .day-tab.active { color:#fff; background:var(--rose); border-color:var(--rose); box-shadow:0 6px 14px rgba(185,86,112,.26); }
+    .day-panel { display:none; margin-top:14px; }
+    .day-panel.active { display:block; }
+    .day-intro { margin:0 0 12px; color:var(--muted); font-size:.9rem; }
+    .timeline { position:relative; padding-left:27px; }
+    .timeline:before { content:""; position:absolute; top:12px; bottom:16px; left:7px; width:2px; background:#e5bcc3; }
+    .stop { position:relative; padding:0 0 14px; }
+    .stop:before { content:""; position:absolute; z-index:1; top:12px; left:-24px; width:11px; height:11px; border:3px solid var(--blush); border-radius:50%; background:var(--rose); }
+    .stop-card,.budget,.weather { padding:15px; background:rgba(255,253,251,.91); border:1px solid var(--line); border-radius:19px; box-shadow:var(--shadow); }
+    .stop-card { transition:transform .2s ease,box-shadow .2s ease; }.stop-card:hover { transform:translateY(-2px); box-shadow:0 18px 35px rgba(123,61,78,.15); }
+    .stop-time { color:var(--rose); font-size:.76rem; font-weight:800; letter-spacing:.08em; }
+    .stop h3 { margin:3px 0 2px; font-size:1rem; }
+    .stop p { margin:0 0 10px; color:var(--muted); font-size:.88rem; }
+    .place-jump { padding:7px 10px; color:var(--rose-dark); background:#fce8e5; border:0; border-radius:999px; font-size:.82rem; font-weight:800; }
+    .budget { overflow:hidden; padding:0; }
+    .budget table { width:100%; border-collapse:collapse; font-size:.9rem; }
+    .budget th,.budget td { padding:11px 13px; text-align:left; border-bottom:1px solid var(--line); }
+    .budget th { color:var(--muted); font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; background:#f4f5ed; }
+    .budget tr:last-child td { border:0; font-weight:800; color:var(--rose-dark); }
+    .weather { margin-top:13px; color:#73575a; background:#fff0ed; border-color:#edc9c6; font-size:.9rem; }
+    .weather strong { display:block; margin-bottom:4px; color:var(--rose-dark); }
+    .controls { display:grid; gap:9px; }
+    .search { width:100%; padding:12px 14px; color:var(--ink); background:var(--paper); border:1px solid var(--line); border-radius:13px; outline:none; }
+    .search:focus { border-color:var(--rose); box-shadow:0 0 0 3px rgba(185,86,112,.14); }
+    .filters { display:flex; gap:7px; overflow-x:auto; padding:1px 0 3px; scrollbar-width:none; }
+    .filter { flex:none; padding:8px 11px; white-space:nowrap; color:#7a5b63; background:#fff5f2; border:1px solid #ebcfce; border-radius:999px; font-size:.83rem; }
+    .filter.active { color:#fff; background:var(--rose); border-color:var(--rose); }
+    .place-list { display:grid; gap:11px; margin-top:14px; }
+    .place-card { padding:16px; background:rgba(255,253,251,.91); border:1px solid var(--line); border-radius:20px; box-shadow:var(--shadow); transition:transform .2s ease; }.place-card:hover { transform:translateY(-3px); }
+    .place-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+    .place-card h3 { margin:0; font-size:1.05rem; line-height:1.25; }
+    .badge { flex:none; padding:5px 8px; color:var(--rose-dark); background:#fae3e2; border-radius:999px; font-size:.72rem; font-weight:800; }.badge.food { color:#9a5538; background:#f9e7dc; }.badge.cafe { color:#80622c; background:#f8eed5; }
+    .area { margin:5px 0 10px; color:var(--muted); font-size:.84rem; }
+    .place-card p { margin:0 0 10px; font-size:.9rem; }
+    .cost { color:#54655b; font-size:.82rem; }
+    .card-actions { display:flex; flex-wrap:wrap; gap:8px; }
+    .action { display:inline-block; padding:8px 10px; color:var(--rose-dark); background:#fce9e6; border-radius:999px; font-size:.82rem; font-weight:800; text-decoration:none; }.action.source { color:#725e50; background:#f7eee6; }
+    .empty { display:none; padding:28px 16px; text-align:center; color:var(--muted); }
+    .bottom-nav { position:fixed; z-index:5; right:0; bottom:0; left:0; padding:9px max(16px,env(safe-area-inset-right)) calc(9px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left)); background:rgba(255,247,244,.88); border-top:1px solid rgba(231,191,193,.8); backdrop-filter:blur(13px); }
+    .bottom-nav nav { display:grid; grid-template-columns:1fr 1fr; gap:9px; width:min(728px,100%); margin:auto; }
+    .nav-btn { min-height:47px; color:#805d66; background:transparent; border:0; border-radius:999px; font-weight:800; }.nav-btn.active { color:#fff; background:var(--rose); box-shadow:0 5px 13px rgba(185,86,112,.23); }
+    @media (min-width:620px) { .shell{padding-right:24px;padding-left:24px}.hero{margin:18px 0 27px;border-radius:30px;padding:55px 42px 48px}.place-list{grid-template-columns:1fr 1fr}.place-card{display:flex;flex-direction:column}.card-actions{margin-top:auto}.hero-art{right:13%;bottom:39px;transform:scale(1.6) rotate(-12deg)} }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="page active" id="itinerary" aria-labelledby="itinerary-title">
+      <header class="hero">
+        <div class="eyebrow">🌲 Hành trình nhỏ</div>
+        <h1 id="itinerary-title">Đà Lạt, thong thả thôi</h1>
+        <p>Đến trưa ngày đầu · về chiều ngày cuối. Một lịch trình vừa đủ để ngắm rừng thông, ăn ngon và không vội.</p>
+        <div class="trip-pills"><span>3 ngày 2 đêm</span><span>2 người</span><span>3,4–5 triệu đồng</span></div>
+        <div class="hero-art" aria-hidden="true"><span></span><span></span><span></span><span></span><i></i></div>
+      </header>
+
+      <div class="section-title"><h2>Lịch trình theo ngày</h2><p class="hint">Chạm để đổi ngày</p></div>
+      <div class="day-tabs" role="tablist" aria-label="Chọn ngày">
+        <button class="day-tab active" data-day="1" role="tab" aria-selected="true">Ngày 1</button>
+        <button class="day-tab" data-day="2" role="tab" aria-selected="false">Ngày 2</button>
+        <button class="day-tab" data-day="3" role="tab" aria-selected="false">Ngày 3</button>
+      </div>
+      <div class="day-panel active" data-panel="1"><p class="day-intro">Trung tâm Đà Lạt · nhận phòng rồi đi bộ ngắm phố.</p><div class="timeline">
+        <article class="stop"><div class="stop-card"><div class="stop-time">12:00 · DỰ KIẾN</div><h3>Nhận phòng & nghỉ ngơi</h3><p>Ăn nhẹ, gửi hành lý nếu chưa đến giờ nhận phòng.</p></div></article>
+        <article class="stop"><div class="stop-card"><div class="stop-time">14:30</div><h3>Ga Đà Lạt</h3><p>Kiến trúc cổ, hợp chụp ảnh; đi sớm để còn thời gian dạo hồ.</p><button class="place-jump" data-place="ga-da-lat">Xem địa điểm</button></div></article>
+        <article class="stop"><div class="stop-card"><div class="stop-time">16:00</div><h3>Hồ Xuân Hương · Quảng trường Lâm Viên</h3><p>Dạo ven hồ, ngắm hoàng hôn và nụ hoa atisô.</p><button class="place-jump" data-place="ho-xuan-huong">Xem địa điểm</button></div></article>
+        <article class="stop"><div class="stop-card"><div class="stop-time">18:30</div><h3>Nem nướng</h3><p>Bữa tối nhẹ trước khi đi chợ đêm.</p><button class="place-jump" data-place="nem-nuong">Xem địa điểm</button></div></article>
+        <article class="stop"><div class="stop-card"><div class="stop-time">20:00</div><h3>Chợ đêm Đà Lạt</h3><p>Dạo phố, thử sữa đậu nành nóng; về sớm để giữ sức.</p><button class="place-jump" data-place="cho-dem">Xem địa điểm</button></div></article>
+      </div></div>
+      <div class="day-panel" data-panel="2"><p class="day-intro">Nam Đà Lạt · ưu tiên tuyến Datanla – Tuyền Lâm liền nhau.</p><div class="timeline">
+        <article class="stop"><div class="stop-card"><div class="stop-time">07:30</div><h3>Bánh mì xíu mại</h3><p>Ăn sáng nóng, tiện xuất phát sớm.</p><button class="place-jump" data-place="banh-mi-xiu-mai">Xem địa điểm</button></div></article>
+        <article class="stop"><div class="stop-card"><div class="stop-time">09:00</div><h3>Thác Datanla</h3><p>Chọn máng trượt hoặc dạo thác tùy thời tiết và sức khỏe.</p><button class="place-jump" data-place="datanla">Xem địa điểm</button></div></article>
+        <article class="stop"><div class="stop-card"><div class="stop-time">12:00</div><h3>Ăn trưa · nghỉ ngắn</h3><p>Chủ động chọn quán trên đường về Tuyền Lâm.</p></div></article>
+        <article class="stop"><div class="stop-card"><div class="stop-time">14:00</div><h3>Thiền viện Trúc Lâm · hồ Tuyền Lâm</h3><p>Không gian yên tĩnh, trang phục lịch sự khi vào thiền viện.</p><button class="place-jump" data-place="truc-lam">Xem địa điểm</button></div></article>
+        <article class="stop"><div class="stop-card"><div class="stop-time">18:30</div><h3>Lẩu gà lá é</h3><p>Đặt bàn nếu đi cuối tuần hoặc giờ cao điểm.</p><button class="place-jump" data-place="lau-ga-la-e">Xem địa điểm</button></div></article>
+      </div></div>
+      <div class="day-panel" data-panel="3"><p class="day-intro">Trại Mát – Cầu Đất · khởi hành sớm để kịp chuyến về chiều.</p><div class="timeline">
+        <article class="stop"><div class="stop-card"><div class="stop-time">05:30</div><h3>Cầu Đất</h3><p>Săn mây hoặc ngắm đồi chè. Kiểm tra thời tiết trước khi đi.</p><button class="place-jump" data-place="cau-dat">Xem địa điểm</button></div></article>
+        <article class="stop"><div class="stop-card"><div class="stop-time">09:30</div><h3>Chùa Linh Phước</h3><p>Chùa Ve Chai ở Trại Mát; dành khoảng 45–60 phút.</p><button class="place-jump" data-place="linh-phuoc">Xem địa điểm</button></div></article>
+        <article class="stop"><div class="stop-card"><div class="stop-time">11:00</div><h3>Túi Mơ To</h3><p>Cà phê, nghỉ chân; linh hoạt bỏ qua nếu chuyến về sớm.</p><button class="place-jump" data-place="tui-mo-to">Xem địa điểm</button></div></article>
+        <article class="stop"><div class="stop-card"><div class="stop-time">12:30</div><h3>Trả phòng · ăn trưa · về</h3><p>Để dư thời gian lấy hành lý và di chuyển ra điểm đón.</p></div></article>
+      </div></div>
+      <div class="section-title"><h2>Ngân sách cho 2 người</h2><p class="hint">Dự trù</p></div>
+      <div class="budget"><table><thead><tr><th>Khoản</th><th>Dự kiến</th></tr></thead><tbody><tr><td>Phòng 2 đêm</td><td>1,2–1,8 triệu</td></tr><tr><td>Ăn uống</td><td>1,1–1,5 triệu</td></tr><tr><td>Đi lại & vé</td><td>0,8–1,4 triệu</td></tr><tr><td>Tổng</td><td>3,4–5 triệu đồng</td></tr></tbody></table></div>
+      <aside class="weather"><strong>☔ Nếu mưa hoặc về sớm</strong>Ưu tiên Ga Đà Lạt, chùa Linh Phước và các quán ăn/cà phê gần trung tâm. Bỏ Cầu Đất hoặc Túi Mơ To trước; không cần cố đi đủ.</aside>
+    </section>
+
+    <section class="page" id="places" aria-labelledby="places-title">
+      <header class="hero"><div class="eyebrow">📍 Bản đồ bỏ túi</div><h1 id="places-title">Điểm đến đã lưu</h1><p>Nội dung vẫn đọc được khi ngoại tuyến. Bản đồ và nguồn cần kết nối Internet.</p><div class="hero-art" aria-hidden="true"><span></span><span></span><span></span><span></span><i></i></div></header>
+      <div class="controls"><input class="search" id="search" type="search" placeholder="Tìm tên địa điểm, món ăn…" aria-label="Tìm địa điểm"><div class="filters" aria-label="Lọc theo loại và khu vực">
+        <button class="filter active" data-filter="all">Tất cả</button><button class="filter" data-filter="tham-quan">Tham quan</button><button class="filter" data-filter="an-uong">Ăn uống</button><button class="filter" data-filter="ca-phe">Cà phê</button><button class="filter" data-filter="trung-tam">Trung tâm</button><button class="filter" data-filter="tuyen-lam">Tuyền Lâm</button><button class="filter" data-filter="trai-mat">Trại Mát–Cầu Đất</button>
+      </div></div>
+      <div class="place-list" id="place-list">
+        <article class="place-card" id="ga-da-lat" data-type="tham-quan" data-area="trung-tam" data-search="ga da lat ga tau kien truc co"><div class="place-head"><h3>Ga Đà Lạt</h3><span class="badge">Tham quan</span></div><div class="area">Trung tâm · đường Quang Trung</div><p>Nhà ga cổ đặc trưng của Đà Lạt; hợp ghé buổi chiều để chụp ảnh.</p><p class="cost">Chi phí: kiểm tra giá vé tham quan tại quầy trước khi vào.</p><div class="card-actions"><a class="action" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Ga+Da+Lat">Mở bản đồ</a><a class="action source" target="_blank" rel="noopener" href="https://www.google.com/search?q=Ga+Da+Lat+thong+tin">Nguồn thông tin</a></div></article>
+        <article class="place-card" id="ho-xuan-huong" data-type="tham-quan" data-area="trung-tam" data-search="ho xuan huong quang truong lam vien atiso"><div class="place-head"><h3>Hồ Xuân Hương · Quảng trường Lâm Viên</h3><span class="badge">Tham quan</span></div><div class="area">Trung tâm · đường Trần Quốc Toản</div><p>Đi bộ ven hồ, quảng trường có biểu tượng nụ hoa dã quỳ và atisô.</p><p class="cost">Chi phí: miễn phí; dự trù gửi xe, đồ uống nếu có.</p><div class="card-actions"><a class="action" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Ho+Xuan+Huong+Da+Lat">Mở bản đồ</a><a class="action source" target="_blank" rel="noopener" href="https://www.google.com/search?q=Ho+Xuan+Huong+Da+Lat">Nguồn thông tin</a></div></article>
+        <article class="place-card" id="cho-dem" data-type="an-uong" data-area="trung-tam" data-search="cho dem da lat sua dau nan do an vat"><div class="place-head"><h3>Chợ đêm Đà Lạt</h3><span class="badge food">Ăn uống</span></div><div class="area">Trung tâm · khu chợ Đà Lạt</div><p>Không khí nhộn nhịp buổi tối; thử sữa đậu nành nóng và đồ ăn vặt.</p><p class="cost">Chi phí: dự trù 80–200 nghìn/người tùy món.</p><div class="card-actions"><a class="action" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Cho+Dem+Da+Lat">Mở bản đồ</a><a class="action source" target="_blank" rel="noopener" href="https://www.google.com/search?q=Cho+dem+Da+Lat">Nguồn thông tin</a></div></article>
+        <article class="place-card" id="nem-nuong" data-type="an-uong" data-area="trung-tam" data-search="nem nuong da lat ba hung mon an"><div class="place-head"><h3>Nem nướng Đà Lạt</h3><span class="badge food">Ăn uống</span></div><div class="area">Trung tâm · chọn quán gần nơi ở</div><p>Nem cuốn rau, bánh tráng và nước chấm; dễ ăn cho bữa tối đầu tiên.</p><p class="cost">Chi phí: dự trù 60–120 nghìn/người.</p><div class="card-actions"><a class="action" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Nem+Nuong+Ba+Hung+Da+Lat">Mở bản đồ</a><a class="action source" target="_blank" rel="noopener" href="https://www.google.com/search?q=nem+nuong+Da+Lat">Nguồn thông tin</a></div></article>
+        <article class="place-card" id="banh-mi-xiu-mai" data-type="an-uong" data-area="trung-tam" data-search="banh mi xiu mai da lat an sang"><div class="place-head"><h3>Bánh mì xíu mại</h3><span class="badge food">Ăn uống</span></div><div class="area">Trung tâm · nhiều quán quanh chợ</div><p>Bánh mì chấm xíu mại nóng; món sáng quen thuộc của Đà Lạt.</p><p class="cost">Chi phí: dự trù 35–60 nghìn/người.</p><div class="card-actions"><a class="action" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Banh+Mi+Xiu+Mai+Da+Lat">Mở bản đồ</a><a class="action source" target="_blank" rel="noopener" href="https://www.google.com/search?q=banh+mi+xiu+mai+Da+Lat">Nguồn thông tin</a></div></article>
+        <article class="place-card" id="datanla" data-type="tham-quan" data-area="tuyen-lam" data-search="thac datanla mang truot tham quan"><div class="place-head"><h3>Thác Datanla</h3><span class="badge">Tham quan</span></div><div class="area">Tuyền Lâm · đèo Prenn</div><p>Thác trong rừng thông; có các hoạt động mạo hiểm và máng trượt.</p><p class="cost">Chi phí: vé cổng và hoạt động tính riêng, cần kiểm tra trước chuyến đi.</p><div class="card-actions"><a class="action" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Thac+Datanla+Da+Lat">Mở bản đồ</a><a class="action source" target="_blank" rel="noopener" href="https://www.google.com/search?q=Thac+Datanla+gia+ve">Nguồn thông tin</a></div></article>
+        <article class="place-card" id="truc-lam" data-type="tham-quan" data-area="tuyen-lam" data-search="thien vien truc lam ho tuyen lam chua"><div class="place-head"><h3>Thiền viện Trúc Lâm · hồ Tuyền Lâm</h3><span class="badge">Tham quan</span></div><div class="area">Tuyền Lâm · đường Trúc Lâm Yên Tử</div><p>Không gian thanh tịnh cạnh hồ; đi nhẹ, giữ yên lặng và ăn mặc lịch sự.</p><p class="cost">Chi phí: vào thiền viện miễn phí; dự trù di chuyển.</p><div class="card-actions"><a class="action" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Thien+Vien+Truc+Lam+Da+Lat">Mở bản đồ</a><a class="action source" target="_blank" rel="noopener" href="https://www.google.com/search?q=Thien+vien+Truc+Lam+Da+Lat">Nguồn thông tin</a></div></article>
+        <article class="place-card" id="lau-ga-la-e" data-type="an-uong" data-area="trung-tam" data-search="lau ga la e da lat tao ngoi mon an"><div class="place-head"><h3>Lẩu gà lá é</h3><span class="badge food">Ăn uống</span></div><div class="area">Trung tâm · nhiều quán, nên chọn gần chỗ ở</div><p>Lẩu gà thơm lá é, hợp bữa tối se lạnh. Đặt bàn khi đi cuối tuần.</p><p class="cost">Chi phí: dự trù 250–450 nghìn/nồi cho 2 người.</p><div class="card-actions"><a class="action" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Lau+Ga+La+E+Da+Lat">Mở bản đồ</a><a class="action source" target="_blank" rel="noopener" href="https://www.google.com/search?q=lau+ga+la+e+Da+Lat">Nguồn thông tin</a></div></article>
+        <article class="place-card" id="cau-dat" data-type="tham-quan" data-area="trai-mat" data-search="cau dat doi che san may trai mat"><div class="place-head"><h3>Cầu Đất</h3><span class="badge">Tham quan</span></div><div class="area">Trại Mát–Cầu Đất · hướng quốc lộ 20</div><p>Đồi chè và không khí sớm mai; cần đi từ rất sớm nếu muốn săn mây.</p><p class="cost">Chi phí: dự trù xăng/xe; kiểm tra điểm vào và thời tiết trước khi đi.</p><div class="card-actions"><a class="action" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Cau+Dat+Da+Lat">Mở bản đồ</a><a class="action source" target="_blank" rel="noopener" href="https://www.google.com/search?q=Cau+Dat+Da+Lat+san+may">Nguồn thông tin</a></div></article>
+        <article class="place-card" id="linh-phuoc" data-type="tham-quan" data-area="trai-mat" data-search="chua linh phuoc ve chai trai mat"><div class="place-head"><h3>Chùa Linh Phước</h3><span class="badge">Tham quan</span></div><div class="area">Trại Mát · đường Tự Phước</div><p>Còn gọi chùa Ve Chai, nổi bật với kiến trúc khảm mảnh sành.</p><p class="cost">Chi phí: vào chùa miễn phí; đóng góp tùy tâm nếu muốn.</p><div class="card-actions"><a class="action" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Chua+Linh+Phuoc+Da+Lat">Mở bản đồ</a><a class="action source" target="_blank" rel="noopener" href="https://www.google.com/search?q=Chua+Linh+Phuoc+Da+Lat">Nguồn thông tin</a></div></article>
+        <article class="place-card" id="tui-mo-to" data-type="ca-phe" data-area="trai-mat" data-search="tui mo to cafe da lat trai mat"><div class="place-head"><h3>Túi Mơ To</h3><span class="badge cafe">Cà phê</span></div><div class="area">Trại Mát · khu Hùng Vương</div><p>Cà phê với góc nhìn nhà lồng và đồi; ghé khi vẫn còn dư thời gian.</p><p class="cost">Chi phí: dự trù 50–100 nghìn/người, kiểm tra thực đơn tại quán.</p><div class="card-actions"><a class="action" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Tui+Mo+To+Da+Lat">Mở bản đồ</a><a class="action source" target="_blank" rel="noopener" href="https://www.google.com/search?q=Tui+Mo+To+Da+Lat">Nguồn thông tin</a></div></article>
+      </div>
+      <p class="empty" id="empty">Không tìm thấy địa điểm phù hợp. Hãy thử từ khóa hoặc bộ lọc khác.</p>
+    </section>
+  </main>
+  <footer class="bottom-nav"><nav aria-label="Điều hướng chính"><button class="nav-btn active" data-page="itinerary">☷ &nbsp;Lịch trình</button><button class="nav-btn" data-page="places">⌖ &nbsp;Địa điểm</button></nav></footer>
+  <script>
+    const pages = document.querySelectorAll('.page'), navs = document.querySelectorAll('.nav-btn');
+    function openPage(id){ pages.forEach(p=>p.classList.toggle('active',p.id===id)); navs.forEach(n=>n.classList.toggle('active',n.dataset.page===id)); window.scrollTo({top:0,behavior:'smooth'}); }
+    navs.forEach(btn=>btn.addEventListener('click',()=>openPage(btn.dataset.page)));
+    document.querySelectorAll('.day-tab').forEach(tab=>tab.addEventListener('click',()=>{ const d=tab.dataset.day; document.querySelectorAll('.day-tab').forEach(x=>{x.classList.toggle('active',x===tab);x.setAttribute('aria-selected',x===tab)}); document.querySelectorAll('.day-panel').forEach(p=>p.classList.toggle('active',p.dataset.panel===d)); }));
+    document.querySelectorAll('.place-jump').forEach(btn=>btn.addEventListener('click',()=>{ openPage('places'); setTimeout(()=>document.getElementById(btn.dataset.place)?.scrollIntoView({behavior:'smooth',block:'center'}),120); }));
+    const search=document.getElementById('search'), filters=document.querySelectorAll('.filter'), cards=[...document.querySelectorAll('.place-card')], empty=document.getElementById('empty'); let current='all';
+    function filterPlaces(){ const q=search.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); let count=0; cards.forEach(card=>{ const text=card.dataset.search; const match=(current==='all'||card.dataset.type===current||card.dataset.area===current)&&text.includes(q); card.style.display=match?'':'none'; if(match)count++; }); empty.style.display=count?'none':'block'; }
+    search.addEventListener('input',filterPlaces); filters.forEach(btn=>btn.addEventListener('click',()=>{current=btn.dataset.filter;filters.forEach(x=>x.classList.toggle('active',x===btn));filterPlaces();}));
+  </script>
+</body>
+</html>
