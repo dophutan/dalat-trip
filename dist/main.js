@@ -113,6 +113,11 @@ const plannerClear = document.getElementById('planner-clear');
 const plannerSave = document.getElementById('planner-save');
 const plannerImage = document.getElementById('planner-image');
 const plannerCost = document.getElementById('planner-cost');
+const itineraryKicker = document.getElementById('itinerary-kicker');
+const itineraryHeading = document.getElementById('itinerary-heading');
+const itineraryDescription = document.getElementById('itinerary-description');
+const suggestedItinerary = document.getElementById('suggested-itinerary');
+const personalItinerary = document.getElementById('personal-itinerary');
 const plannerStorageKey = 'dalat-personal-itinerary';
 let activePlannerDay = '';
 let personalPlan = { startDate: '', endDate: '', days: {} };
@@ -134,6 +139,9 @@ try {
 } catch {
   localStorage.removeItem(plannerStorageKey);
 }
+
+tripStartDate.value = personalPlan.startDate;
+tripEndDate.value = personalPlan.endDate;
 
 function savePlan() {
   personalPlan.startDate = tripStartDate.value;
@@ -160,6 +168,11 @@ function setPlannerFormState(enabled) {
     element.disabled = !enabled;
   });
   plannerForm.classList.toggle('opacity-50', !enabled);
+}
+
+function setPlannerActionState(enabled) {
+  plannerSave.disabled = !enabled;
+  plannerImage.disabled = !enabled;
 }
 
 function getEntryCost(entry) {
@@ -195,6 +208,120 @@ function getTripTotal() {
     .reduce((total, entry) => total + getEntryCost(entry), 0);
 }
 
+function getPersonalTripDayCount() {
+  if (!personalPlan.startDate || !personalPlan.endDate) return 0;
+  const start = new Date(`${personalPlan.startDate}T00:00:00`);
+  const end = new Date(`${personalPlan.endDate}T00:00:00`);
+  const difference = Math.round((end - start) / 86400000);
+  return difference >= 0 ? difference + 1 : 0;
+}
+
+function formatPersonalTripDay(dayNumber) {
+  const date = new Date(`${personalPlan.startDate}T00:00:00`);
+  date.setDate(date.getDate() + dayNumber - 1);
+  return new Intl.DateTimeFormat('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit' }).format(date);
+}
+
+function hasPersonalItinerary() {
+  return getPersonalTripDayCount() > 0 && Object.values(personalPlan.days).some((entries) => entries.length > 0);
+}
+
+function renderItineraryView() {
+  const hasPlan = hasPersonalItinerary();
+  suggestedItinerary.classList.toggle('hidden', hasPlan);
+  personalItinerary.classList.toggle('hidden', !hasPlan);
+
+  if (!hasPlan) {
+    itineraryKicker.textContent = 'Lịch trình gợi ý';
+    itineraryHeading.textContent = 'Đi vừa đủ, ăn thật ngon.';
+    itineraryDescription.textContent = 'Chọn từng ngày để xem lộ trình, điểm dừng và gợi ý món ăn. Thời gian là ước lượng; hãy linh hoạt theo thời tiết và sức của bạn.';
+    personalItinerary.replaceChildren();
+    return;
+  }
+
+  itineraryKicker.textContent = 'Lịch trình của bạn';
+  itineraryHeading.textContent = 'Chuyến đi, theo nhịp của riêng bạn.';
+  itineraryDescription.textContent = `${personalPlan.startDate} → ${personalPlan.endDate} · ${getPersonalTripDayCount()} ngày · tổng chi phí ${formatCurrency(getTripTotal())}.`;
+  personalItinerary.replaceChildren();
+
+  const actions = document.createElement('div');
+  actions.className = 'mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white p-4 shadow-[0_8px_30px_rgba(22,52,44,.06)]';
+  const summary = document.createElement('p');
+  summary.className = 'text-sm text-pine/65';
+  summary.textContent = `Lịch cá nhân · ${getPersonalTripDayCount()} ngày · ${formatCurrency(getTripTotal())}`;
+  const actionGroup = document.createElement('div');
+  actionGroup.className = 'flex gap-2';
+  const edit = document.createElement('button');
+  edit.type = 'button';
+  edit.className = 'rounded-full bg-pine px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-moss';
+  edit.textContent = 'Chỉnh sửa lịch trình';
+  edit.addEventListener('click', openPlanner);
+  const clear = document.createElement('button');
+  clear.type = 'button';
+  clear.className = 'rounded-full border border-pine/15 px-4 py-2.5 text-sm font-semibold text-pine transition hover:border-clay hover:text-clay';
+  clear.textContent = 'Xóa lịch';
+  clear.addEventListener('click', () => {
+    if (window.confirm('Xóa lịch cá nhân và quay lại lịch trình gợi ý?')) clearPersonalPlan();
+  });
+  actionGroup.append(edit, clear);
+  actions.append(summary, actionGroup);
+  personalItinerary.append(actions);
+
+  const days = document.createElement('div');
+  days.className = 'grid gap-4 lg:grid-cols-2';
+  Array.from({ length: getPersonalTripDayCount() }, (_, index) => String(index + 1)).forEach((day) => {
+    const entries = [...(personalPlan.days[day] || [])].sort((a, b) => a.time.localeCompare(b.time));
+    const card = document.createElement('article');
+    card.className = 'rounded-2xl bg-white p-5 shadow-[0_8px_30px_rgba(22,52,44,.06)]';
+    const title = document.createElement('div');
+    title.className = 'flex items-start justify-between gap-3 border-b border-pine/10 pb-4';
+    const dayName = document.createElement('h3');
+    dayName.className = 'font-display text-2xl italic';
+    dayName.textContent = `Ngày ${day} · ${formatPersonalTripDay(Number(day))}`;
+    const total = document.createElement('span');
+    total.className = 'shrink-0 text-sm font-semibold text-clay';
+    total.textContent = formatCurrency(entries.reduce((sum, entry) => sum + getEntryCost(entry), 0));
+    title.append(dayName, total);
+    card.append(title);
+
+    if (!entries.length) {
+      const empty = document.createElement('p');
+      empty.className = 'py-5 text-sm text-pine/55';
+      empty.textContent = 'Chưa có điểm dừng cho ngày này.';
+      card.append(empty);
+    }
+
+    entries.forEach((entry) => {
+      const row = document.createElement('div');
+      row.className = 'grid grid-cols-[64px_1fr] gap-3 border-b border-pine/10 py-4 last:border-0 sm:grid-cols-[78px_1fr_auto]';
+      const time = document.createElement('strong');
+      time.className = 'font-mono text-sm text-clay';
+      time.textContent = entry.time;
+      const details = document.createElement('div');
+      const place = document.createElement('p');
+      place.className = 'font-semibold';
+      place.textContent = entry.place;
+      details.append(place);
+      [entry.address && `📍 ${entry.address}`, entry.note].filter(Boolean).forEach((text) => {
+        const extra = document.createElement('p');
+        extra.className = 'mt-1 text-sm leading-5 text-pine/60';
+        extra.textContent = text;
+        details.append(extra);
+      });
+      row.append(time, details);
+      if (getEntryCost(entry)) {
+        const cost = document.createElement('span');
+        cost.className = 'col-start-2 text-sm font-semibold text-clay sm:col-start-auto';
+        cost.textContent = formatCurrency(getEntryCost(entry));
+        row.append(cost);
+      }
+      card.append(row);
+    });
+    days.append(card);
+  });
+  personalItinerary.append(days);
+}
+
 function syncTripDays() {
   const count = getTripDayCount();
   const invalidRange = tripStartDate.value && tripEndDate.value && count === 0;
@@ -218,8 +345,10 @@ function syncTripDays() {
   if (!validDays.has(activePlannerDay)) activePlannerDay = count ? '1' : '';
   renderPlannerDays();
   setPlannerFormState(Boolean(count));
+  setPlannerActionState(Boolean(count));
   renderPlan();
   savePlan();
+  renderItineraryView();
 }
 
 function renderPlannerDays() {
@@ -292,6 +421,7 @@ function renderPlan() {
       personalPlan.days[activePlannerDay].splice(index, 1);
       savePlan();
       renderPlan();
+      renderItineraryView();
     });
 
     card.append(time, copy, remove);
@@ -305,12 +435,14 @@ function setPlannerDay(day) {
   renderPlan();
 }
 
-plannerOpenButtons.forEach((button) => button.addEventListener('click', () => {
+function openPlanner() {
   tripStartDate.value = personalPlan.startDate;
   tripEndDate.value = personalPlan.endDate;
   plannerDialog.showModal();
   syncTripDays();
-}));
+}
+
+plannerOpenButtons.forEach((button) => button.addEventListener('click', openPlanner));
 
 plannerCloseButton.addEventListener('click', () => plannerDialog.close());
 plannerDialog.addEventListener('click', (event) => {
@@ -338,11 +470,13 @@ plannerForm.addEventListener('submit', (event) => {
   savePlan();
   plannerForm.reset();
   renderPlan();
+  renderItineraryView();
   place.focus();
 });
 
 plannerSave.addEventListener('click', () => {
   savePlan();
+  renderItineraryView();
   plannerSave.textContent = 'Đã lưu trên thiết bị';
   setTimeout(() => { plannerSave.textContent = 'Lưu lịch trình'; }, 1800);
 });
@@ -450,11 +584,17 @@ plannerImage.addEventListener('click', async () => {
   }
 });
 
-plannerClear.addEventListener('click', () => {
+function clearPersonalPlan() {
   personalPlan = { startDate: '', endDate: '', days: {} };
   tripStartDate.value = '';
   tripEndDate.value = '';
   activePlannerDay = '';
   savePlan();
   syncTripDays();
+}
+
+plannerClear.addEventListener('click', () => {
+  if (window.confirm('Xóa toàn bộ lịch cá nhân?')) clearPersonalPlan();
 });
+
+syncTripDays();

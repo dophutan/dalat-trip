@@ -86,12 +86,14 @@
     <section id="chi-tiet" class="border-y border-pine/10 bg-[#ede9df] py-24 lg:py-32">
       <div class="mx-auto max-w-7xl px-6 lg:px-8">
         <div class="max-w-2xl">
-          <p class="eyebrow text-clay">Lịch trình chi tiết</p>
-          <h2 class="mt-5 font-display text-4xl leading-tight tracking-[-.035em] sm:text-5xl">Đi vừa đủ, ăn thật ngon.</h2>
-          <p class="mt-5 leading-7 text-pine/70">Chọn từng ngày để xem lộ trình, điểm dừng và gợi ý món ăn. Thời gian là ước lượng; hãy linh hoạt theo thời tiết và sức của bạn.</p>
+          <p id="itinerary-kicker" class="eyebrow text-clay">Lịch trình gợi ý</p>
+          <h2 id="itinerary-heading" class="mt-5 font-display text-4xl leading-tight tracking-[-.035em] sm:text-5xl">Đi vừa đủ, ăn thật ngon.</h2>
+          <p id="itinerary-description" class="mt-5 leading-7 text-pine/70">Chọn từng ngày để xem lộ trình, điểm dừng và gợi ý món ăn. Thời gian là ước lượng; hãy linh hoạt theo thời tiết và sức của bạn.</p>
         </div>
 
-        <div class="mt-10 flex gap-3 overflow-x-auto pb-2" role="tablist" aria-label="Chọn ngày lịch trình">
+        <div id="personal-itinerary" class="mt-10 hidden" aria-live="polite"></div>
+        <div id="suggested-itinerary" class="mt-10">
+        <div class="flex gap-3 overflow-x-auto pb-2" role="tablist" aria-label="Chọn ngày lịch trình">
           <button class="day-tab rounded-full bg-pine px-5 py-3 text-sm font-semibold text-white transition" id="day-1-tab" data-day="1" role="tab" aria-controls="day-1-panel" aria-selected="true" tabindex="0">Ngày 01 · Trung tâm</button>
           <button class="day-tab rounded-full border border-pine/20 bg-white px-5 py-3 text-sm font-semibold text-pine transition hover:border-pine/50" id="day-2-tab" data-day="2" role="tab" aria-controls="day-2-panel" aria-selected="false" tabindex="-1">Ngày 02 · Tuyền Lâm</button>
           <button class="day-tab rounded-full border border-pine/20 bg-white px-5 py-3 text-sm font-semibold text-pine transition hover:border-pine/50" id="day-3-tab" data-day="3" role="tab" aria-controls="day-3-panel" aria-selected="false" tabindex="-1">Ngày 03 · Trại Mát</button>
@@ -130,6 +132,7 @@
               <aside class="rounded-2xl border border-clay/25 bg-[#fff8f2] p-6 lg:col-span-2"><p class="eyebrow text-clay">Phương án mưa</p><p class="mt-2 text-sm leading-6 text-pine/70"><strong class="text-pine">Bỏ Cầu Đất trước</strong> nếu mưa lớn hoặc sương quá dày. Thay bằng Bảo tàng Lâm Đồng, quán cà phê trung tâm hoặc ghé Chùa Linh Phước khi về từ hướng Trại Mát.</p></aside>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </section>
@@ -224,8 +227,8 @@
       <div class="mt-5 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
         <button id="planner-clear" class="rounded-xl px-4 py-3 text-sm font-semibold text-pine/60 transition hover:bg-white hover:text-clay" type="button">Xóa toàn bộ lịch</button>
         <div class="flex gap-3">
-          <button id="planner-image" class="rounded-xl border border-pine/20 bg-white px-4 py-3 text-sm font-semibold text-pine transition hover:border-clay hover:text-clay" type="button">Lưu ảnh PNG</button>
-          <button id="planner-save" class="rounded-xl bg-pine px-5 py-3 text-sm font-semibold text-white transition hover:bg-moss" type="button">Lưu lịch trình</button>
+          <button id="planner-image" class="rounded-xl border border-pine/20 bg-white px-4 py-3 text-sm font-semibold text-pine transition hover:border-clay hover:text-clay disabled:cursor-not-allowed disabled:opacity-40" type="button" disabled>Lưu ảnh PNG</button>
+          <button id="planner-save" class="rounded-xl bg-pine px-5 py-3 text-sm font-semibold text-white transition hover:bg-moss disabled:cursor-not-allowed disabled:opacity-40" type="button" disabled>Lưu lịch trình</button>
         </div>
       </div>
     </div>
