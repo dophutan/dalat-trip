@@ -6,29 +6,12 @@
   <meta name="theme-color" content="#16342c">
   <meta name="description" content="Hành trình 3 ngày 2 đêm ở Đà Lạt: thong thả, nhiều cây xanh và đủ đầy trải nghiệm.">
   <title>Đà Lạt, thong thả thôi — 3 ngày 2 đêm</title>
+  <script src="tailwind.config.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: { pine: '#16342c', moss: '#36594c', mist: '#f5f3ed', clay: '#c76d52', sand: '#ded3bd' },
-          fontFamily: { display: ['Playfair Display', 'Georgia', 'serif'], sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'] },
-          boxShadow: { soft: '0 20px 60px rgba(17, 41, 33, .14)' }
-        }
-      }
-    }
-  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
-  <style type="text/tailwindcss">
-    @layer base { html { scroll-behavior: smooth; } body { @apply bg-mist font-sans text-pine antialiased; } }
-    @layer utilities {
-      .eyebrow { @apply font-mono text-[11px] font-medium uppercase tracking-[.2em]; }
-      .glass { @apply border border-white/20 bg-white/10 backdrop-blur-md; }
-      .grain { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E"); }
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="absolute inset-x-0 top-0 z-20">
@@ -121,17 +104,6 @@
   </main>
 
   <footer class="bg-[#102a23] px-6 py-8 text-white/65 lg:px-8"><div class="mx-auto flex max-w-7xl flex-col justify-between gap-3 text-sm sm:flex-row"><p>© 2026 Dalat, slowly. Một hướng dẫn bỏ túi.</p><p class="font-mono text-xs uppercase tracking-wider">Made for unhurried days</p></div></footer>
-  <script>
-    const button = document.getElementById('menu-button');
-    const menu = document.getElementById('mobile-menu');
-    button.addEventListener('click', () => {
-      const expanded = button.getAttribute('aria-expanded') === 'true';
-      button.setAttribute('aria-expanded', String(!expanded));
-      menu.classList.toggle('hidden');
-    });
-    menu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
-      menu.classList.add('hidden'); button.setAttribute('aria-expanded', 'false');
-    }));
-  </script>
+  <script src="main.js"></script>
 </body>
 </html>
