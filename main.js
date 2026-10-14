@@ -79,6 +79,7 @@ const plannerDayTotal = document.getElementById('planner-day-total');
 const plannerTripTotal = document.getElementById('planner-trip-total');
 const plannerClear = document.getElementById('planner-clear');
 const plannerSave = document.getElementById('planner-save');
+const plannerCost = document.getElementById('planner-cost');
 const plannerStorageKey = 'dalat-personal-itinerary';
 let activePlannerDay = '';
 let personalPlan = { startDate: '', endDate: '', days: {} };
@@ -129,8 +130,13 @@ function setPlannerFormState(enabled) {
 }
 
 function getEntryCost(entry) {
-  const cost = Number(entry.cost);
+  const cost = Number(String(entry.cost || '').replace(/\D/g, ''));
   return Number.isFinite(cost) && cost > 0 ? cost : 0;
+}
+
+function formatCostInput(value) {
+  const digits = String(value).replace(/\D/g, '');
+  return digits ? new Intl.NumberFormat('vi-VN').format(Number(digits)) : '';
 }
 
 function formatCurrency(amount) {
@@ -275,19 +281,21 @@ plannerDialog.addEventListener('click', (event) => {
 });
 tripStartDate.addEventListener('change', syncTripDays);
 tripEndDate.addEventListener('change', syncTripDays);
+plannerCost.addEventListener('input', () => {
+  plannerCost.value = formatCostInput(plannerCost.value);
+});
 
 plannerForm.addEventListener('submit', (event) => {
   event.preventDefault();
   const time = document.getElementById('planner-time');
   const place = document.getElementById('planner-place');
   const address = document.getElementById('planner-address');
-  const cost = document.getElementById('planner-cost');
   const note = document.getElementById('planner-note');
   personalPlan.days[activePlannerDay].push({
     time: time.value,
     place: place.value.trim(),
     address: address.value.trim(),
-    cost: Number(cost.value) || 0,
+    cost: getEntryCost({ cost: plannerCost.value }),
     note: note.value.trim()
   });
   savePlan();
