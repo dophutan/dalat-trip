@@ -331,7 +331,7 @@ plannerPdf.addEventListener('click', async () => {
   plannerPdf.textContent = 'Đang tạo PDF…';
 
   const documentView = document.createElement('article');
-  documentView.style.cssText = 'position:fixed;left:-10000px;top:0;width:760px;padding:44px;background:#fff;color:#16342c;font-family:Inter,Arial,sans-serif;';
+  documentView.style.cssText = 'position:fixed;left:0;top:0;z-index:-1;width:760px;padding:44px;background:#fff;color:#16342c;font-family:Inter,Arial,sans-serif;';
   const heading = document.createElement('h1');
   heading.textContent = 'Lịch trình Đà Lạt';
   heading.style.cssText = 'margin:0;color:#16342c;font-family:Georgia,serif;font-size:32px;';
@@ -391,6 +391,7 @@ plannerPdf.addEventListener('click', async () => {
   document.body.append(documentView);
 
   try {
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     await html2pdf().set({
       margin: 8,
       filename: `lich-trinh-da-lat-${tripStartDate.value || 'ca-nhan'}.pdf`,
