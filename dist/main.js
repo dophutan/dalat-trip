@@ -71,32 +71,115 @@ const plannerCloseButton = document.querySelector('[data-close-planner]');
 const plannerForm = document.getElementById('planner-form');
 const plannerList = document.getElementById('planner-list');
 const plannerEmpty = document.getElementById('planner-empty');
-const plannerDayButtons = document.querySelectorAll('.planner-day');
+const plannerDayTabs = document.getElementById('planner-day-tabs');
 const tripStartDate = document.getElementById('trip-start-date');
-const tripName = document.getElementById('trip-name');
+const tripEndDate = document.getElementById('trip-end-date');
+const plannerDuration = document.getElementById('planner-duration');
 const plannerClear = document.getElementById('planner-clear');
 const plannerSave = document.getElementById('planner-save');
 const plannerStorageKey = 'dalat-personal-itinerary';
-let activePlannerDay = '1';
-let personalPlan = { tripName: '', startDate: '', days: { 1: [], 2: [], 3: [] } };
+let activePlannerDay = '';
+let personalPlan = { startDate: '', endDate: '', days: {} };
 
 try {
   const savedPlan = JSON.parse(localStorage.getItem(plannerStorageKey));
-  if (savedPlan?.days) personalPlan = savedPlan;
+  if (savedPlan?.days) {
+    personalPlan = {
+      startDate: savedPlan.startDate || '',
+      endDate: savedPlan.endDate || '',
+      days: savedPlan.days
+    };
+    if (personalPlan.startDate && !personalPlan.endDate) {
+      const legacyEndDate = new Date(`${personalPlan.startDate}T00:00:00`);
+      legacyEndDate.setDate(legacyEndDate.getDate() + Math.max(Object.keys(personalPlan.days).length - 1, 0));
+      personalPlan.endDate = `${legacyEndDate.getFullYear()}-${String(legacyEndDate.getMonth() + 1).padStart(2, '0')}-${String(legacyEndDate.getDate()).padStart(2, '0')}`;
+    }
+  }
 } catch {
   localStorage.removeItem(plannerStorageKey);
 }
 
 function savePlan() {
-  personalPlan.tripName = tripName.value.trim();
   personalPlan.startDate = tripStartDate.value;
+  personalPlan.endDate = tripEndDate.value;
   localStorage.setItem(plannerStorageKey, JSON.stringify(personalPlan));
 }
 
+function getTripDayCount() {
+  if (!tripStartDate.value || !tripEndDate.value) return 0;
+  const start = new Date(`${tripStartDate.value}T00:00:00`);
+  const end = new Date(`${tripEndDate.value}T00:00:00`);
+  const difference = Math.round((end - start) / 86400000);
+  return difference >= 0 ? difference + 1 : 0;
+}
+
+function formatTripDay(dayNumber) {
+  const date = new Date(`${tripStartDate.value}T00:00:00`);
+  date.setDate(date.getDate() + dayNumber - 1);
+  return new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit' }).format(date);
+}
+
+function setPlannerFormState(enabled) {
+  plannerForm.querySelectorAll('input, button').forEach((element) => {
+    element.disabled = !enabled;
+  });
+  plannerForm.classList.toggle('opacity-50', !enabled);
+}
+
+function syncTripDays() {
+  const count = getTripDayCount();
+  const invalidRange = tripStartDate.value && tripEndDate.value && count === 0;
+
+  if (invalidRange) {
+    plannerDuration.textContent = 'Ngày trở về cần từ ngày khởi hành trở đi.';
+  } else if (count) {
+    plannerDuration.textContent = `Chuyến đi có ${count} ngày · chọn một ngày để thêm lịch.`;
+  } else {
+    plannerDuration.textContent = 'Chọn ngày đi và ngày về để tạo lịch theo từng ngày.';
+  }
+
+  const validDays = new Set(Array.from({ length: count }, (_, index) => String(index + 1)));
+  Object.keys(personalPlan.days).forEach((day) => {
+    if (!validDays.has(day)) delete personalPlan.days[day];
+  });
+  validDays.forEach((day) => {
+    if (!Array.isArray(personalPlan.days[day])) personalPlan.days[day] = [];
+  });
+
+  if (!validDays.has(activePlannerDay)) activePlannerDay = count ? '1' : '';
+  renderPlannerDays();
+  setPlannerFormState(Boolean(count));
+  renderPlan();
+  savePlan();
+}
+
+function renderPlannerDays() {
+  const count = getTripDayCount();
+  plannerDayTabs.replaceChildren();
+
+  Array.from({ length: count }, (_, index) => {
+    const day = String(index + 1);
+    const button = document.createElement('button');
+    const selected = day === activePlannerDay;
+    button.className = `planner-day whitespace-nowrap rounded-full px-4 py-2.5 text-sm font-semibold ${selected ? 'bg-pine text-white' : 'border border-pine/15 bg-white text-pine'}`;
+    button.dataset.plannerDay = day;
+    button.type = 'button';
+    button.setAttribute('aria-selected', String(selected));
+    button.textContent = `Ngày ${day} · ${formatTripDay(index + 1)}`;
+    button.addEventListener('click', () => setPlannerDay(day));
+    plannerDayTabs.append(button);
+  });
+}
+
 function renderPlan() {
-  const entries = personalPlan.days[activePlannerDay].sort((a, b) => a.time.localeCompare(b.time));
+  const entries = activePlannerDay ? personalPlan.days[activePlannerDay].sort((a, b) => a.time.localeCompare(b.time)) : [];
   plannerList.replaceChildren();
   plannerEmpty.classList.toggle('hidden', entries.length > 0);
+  if (!activePlannerDay) {
+    plannerEmpty.textContent = 'Chọn ngày đi và ngày về để tạo lịch theo từng ngày.';
+    return;
+  }
+  plannerEmpty.textContent = 'Ngày này chưa có điểm dừng. Thêm mốc đầu tiên bên dưới nhé.';
 
   entries.forEach((entry, index) => {
     const card = document.createElement('article');
@@ -136,30 +219,23 @@ function renderPlan() {
 
 function setPlannerDay(day) {
   activePlannerDay = day;
-  plannerDayButtons.forEach((button) => {
-    const selected = button.dataset.plannerDay === day;
-    button.setAttribute('aria-selected', String(selected));
-    button.classList.toggle('bg-pine', selected);
-    button.classList.toggle('text-white', selected);
-    button.classList.toggle('border-pine/15', !selected);
-    button.classList.toggle('bg-white', !selected);
-    button.classList.toggle('text-pine', !selected);
-  });
+  renderPlannerDays();
   renderPlan();
 }
 
 plannerOpenButtons.forEach((button) => button.addEventListener('click', () => {
-  tripName.value = personalPlan.tripName;
   tripStartDate.value = personalPlan.startDate;
+  tripEndDate.value = personalPlan.endDate;
   plannerDialog.showModal();
-  setPlannerDay(activePlannerDay);
+  syncTripDays();
 }));
 
 plannerCloseButton.addEventListener('click', () => plannerDialog.close());
 plannerDialog.addEventListener('click', (event) => {
   if (event.target === plannerDialog) plannerDialog.close();
 });
-plannerDayButtons.forEach((button) => button.addEventListener('click', () => setPlannerDay(button.dataset.plannerDay)));
+tripStartDate.addEventListener('change', syncTripDays);
+tripEndDate.addEventListener('change', syncTripDays);
 
 plannerForm.addEventListener('submit', (event) => {
   event.preventDefault();
@@ -180,9 +256,10 @@ plannerSave.addEventListener('click', () => {
 });
 
 plannerClear.addEventListener('click', () => {
-  personalPlan = { tripName: '', startDate: '', days: { 1: [], 2: [], 3: [] } };
-  tripName.value = '';
+  personalPlan = { startDate: '', endDate: '', days: {} };
   tripStartDate.value = '';
+  tripEndDate.value = '';
+  activePlannerDay = '';
   savePlan();
-  renderPlan();
+  syncTripDays();
 });
