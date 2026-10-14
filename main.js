@@ -17,52 +17,71 @@ mobileMenu.querySelectorAll('a').forEach((link) => {
 const dayTabs = document.querySelectorAll('.day-tab');
 const dayPanels = document.querySelectorAll('.day-panel');
 
-dayTabs.forEach((tab) => {
-  tab.addEventListener('click', () => {
-    const selectedDay = tab.dataset.day;
+function navigateButtonGroup(event, buttons) {
+  const keys = ['ArrowLeft', 'ArrowRight', 'Home', 'End'];
+  if (!keys.includes(event.key)) return;
+  event.preventDefault();
+  const items = [...buttons];
+  const currentIndex = items.indexOf(event.currentTarget);
+  const nextIndex = event.key === 'Home' ? 0 : event.key === 'End' ? items.length - 1 : (currentIndex + (event.key === 'ArrowRight' ? 1 : -1) + items.length) % items.length;
+  items[nextIndex].focus();
+  items[nextIndex].click();
+}
 
-    dayTabs.forEach((item) => {
-      const selected = item === tab;
-      item.setAttribute('aria-selected', String(selected));
-      item.classList.toggle('bg-pine', selected);
-      item.classList.toggle('text-white', selected);
-      item.classList.toggle('border-pine/20', !selected);
-      item.classList.toggle('bg-white', !selected);
-      item.classList.toggle('text-pine', !selected);
-    });
+function selectDayTab(tab) {
+  const selectedDay = tab.dataset.day;
 
-    dayPanels.forEach((panel) => {
-      panel.classList.toggle('hidden', panel.id !== `day-${selectedDay}-panel`);
-    });
+  dayTabs.forEach((item) => {
+    const selected = item === tab;
+    item.setAttribute('aria-selected', String(selected));
+    item.tabIndex = selected ? 0 : -1;
+    item.classList.toggle('bg-pine', selected);
+    item.classList.toggle('text-white', selected);
+    item.classList.toggle('border-pine/20', !selected);
+    item.classList.toggle('bg-white', !selected);
+    item.classList.toggle('text-pine', !selected);
   });
+
+  dayPanels.forEach((panel) => {
+    panel.classList.toggle('hidden', panel.id !== `day-${selectedDay}-panel`);
+  });
+}
+
+dayTabs.forEach((tab) => {
+  tab.addEventListener('click', () => selectDayTab(tab));
+  tab.addEventListener('keydown', (event) => navigateButtonGroup(event, dayTabs));
 });
 
 const placeFilters = document.querySelectorAll('.place-filter');
 const placeItems = document.querySelectorAll('.place-item');
 const placeEmpty = document.getElementById('place-empty');
 
-placeFilters.forEach((filter) => {
-  filter.addEventListener('click', () => {
-    const category = filter.dataset.filter;
-    let visibleItems = 0;
+function selectPlaceFilter(filter) {
+  const category = filter.dataset.filter;
+  let visibleItems = 0;
 
-    placeFilters.forEach((item) => {
-      const selected = item === filter;
-      item.setAttribute('aria-pressed', String(selected));
-      item.classList.toggle('bg-white', selected);
-      item.classList.toggle('text-pine', selected);
-      item.classList.toggle('border-white/25', !selected);
-      item.classList.toggle('text-white/80', !selected);
-    });
-
-    placeItems.forEach((item) => {
-      const visible = category === 'all' || item.dataset.category === category;
-      item.classList.toggle('hidden', !visible);
-      if (visible) visibleItems += 1;
-    });
-
-    placeEmpty.classList.toggle('hidden', visibleItems > 0);
+  placeFilters.forEach((item) => {
+    const selected = item === filter;
+    item.setAttribute('aria-pressed', String(selected));
+    item.tabIndex = selected ? 0 : -1;
+    item.classList.toggle('bg-white', selected);
+    item.classList.toggle('text-pine', selected);
+    item.classList.toggle('border-white/25', !selected);
+    item.classList.toggle('text-white/80', !selected);
   });
+
+  placeItems.forEach((item) => {
+    const visible = category === 'all' || item.dataset.category === category;
+    item.classList.toggle('hidden', !visible);
+    if (visible) visibleItems += 1;
+  });
+
+  placeEmpty.classList.toggle('hidden', visibleItems > 0);
+}
+
+placeFilters.forEach((filter) => {
+  filter.addEventListener('click', () => selectPlaceFilter(filter));
+  filter.addEventListener('keydown', (event) => navigateButtonGroup(event, placeFilters));
 });
 
 const plannerDialog = document.getElementById('planner-dialog');

@@ -1,0 +1,11 @@
+{
+  "name": "dalat-trip",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i src/styles.css -o styles.css --minify"
+  },
+  "devDependencies": {
+    "sharp": "^0.34.3",
+    "tailwindcss": "^3.4.17"
+  }
+}

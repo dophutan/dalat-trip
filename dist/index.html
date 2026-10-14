@@ -6,12 +6,11 @@
   <meta name="theme-color" content="#16342c">
   <meta name="description" content="Hành trình 3 ngày 2 đêm ở Đà Lạt: thong thả, nhiều cây xanh và đủ đầy trải nghiệm.">
   <title>Đà Lạt, thong thả thôi — 3 ngày 2 đêm</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="tailwind.config.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link rel="preload" href="styles.css" as="style">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -38,7 +37,7 @@
 
   <main id="top">
     <section class="relative min-h-[760px] overflow-hidden bg-pine text-white">
-      <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1507914372368-b9b34c8d2db1?auto=format&fit=crop&w=2200&q=85')] bg-cover bg-center"></div>
+      <picture class="absolute inset-0"><source srcset="assets/dalat-hero.avif" type="image/avif"><source srcset="assets/dalat-hero.webp" type="image/webp"><img class="h-full w-full object-cover object-center" src="assets/dalat-hero.jpg" alt="Rừng thông trong sương ở Đà Lạt" width="1536" height="1024" fetchpriority="high"></picture>
       <div class="absolute inset-0 bg-gradient-to-r from-[#0a211b]/90 via-[#123128]/65 to-[#123128]/25"></div>
       <div class="grain absolute inset-0 opacity-30 mix-blend-overlay"></div>
       <div class="relative mx-auto flex min-h-[760px] max-w-7xl items-end px-6 pb-20 pt-40 lg:px-8 lg:pb-24">
@@ -89,9 +88,9 @@
         </div>
 
         <div class="mt-10 flex gap-3 overflow-x-auto pb-2" role="tablist" aria-label="Chọn ngày lịch trình">
-          <button class="day-tab rounded-full bg-pine px-5 py-3 text-sm font-semibold text-white transition" id="day-1-tab" data-day="1" role="tab" aria-controls="day-1-panel" aria-selected="true">Ngày 01 · Trung tâm</button>
-          <button class="day-tab rounded-full border border-pine/20 bg-white px-5 py-3 text-sm font-semibold text-pine transition hover:border-pine/50" id="day-2-tab" data-day="2" role="tab" aria-controls="day-2-panel" aria-selected="false">Ngày 02 · Tuyền Lâm</button>
-          <button class="day-tab rounded-full border border-pine/20 bg-white px-5 py-3 text-sm font-semibold text-pine transition hover:border-pine/50" id="day-3-tab" data-day="3" role="tab" aria-controls="day-3-panel" aria-selected="false">Ngày 03 · Trại Mát</button>
+          <button class="day-tab rounded-full bg-pine px-5 py-3 text-sm font-semibold text-white transition" id="day-1-tab" data-day="1" role="tab" aria-controls="day-1-panel" aria-selected="true" tabindex="0">Ngày 01 · Trung tâm</button>
+          <button class="day-tab rounded-full border border-pine/20 bg-white px-5 py-3 text-sm font-semibold text-pine transition hover:border-pine/50" id="day-2-tab" data-day="2" role="tab" aria-controls="day-2-panel" aria-selected="false" tabindex="-1">Ngày 02 · Tuyền Lâm</button>
+          <button class="day-tab rounded-full border border-pine/20 bg-white px-5 py-3 text-sm font-semibold text-pine transition hover:border-pine/50" id="day-3-tab" data-day="3" role="tab" aria-controls="day-3-panel" aria-selected="false" tabindex="-1">Ngày 03 · Trại Mát</button>
         </div>
 
         <div class="mt-8">
@@ -135,9 +134,9 @@
       <div class="mx-auto max-w-7xl px-6 lg:px-8">
         <div class="flex flex-col justify-between gap-6 sm:flex-row sm:items-end"><div><p class="eyebrow text-sand">02 — Điểm dừng</p><h2 class="mt-5 font-display text-4xl tracking-[-.035em] sm:text-5xl">Những chỗ đáng để nán lại.</h2></div><p class="max-w-xs text-sm leading-6 text-white/60">Đôi khi điều đáng nhớ nhất là một tách cà phê nóng và làn sương chậm qua ô cửa.</p></div>
         <div class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          <article class="group relative min-h-[410px] overflow-hidden rounded-2xl"><img class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1000&q=85" alt="Rừng thông Đà Lạt"><div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/5 to-transparent"></div><div class="absolute inset-x-0 bottom-0 p-6"><p class="eyebrow text-white/70">01 · Bình yên</p><h3 class="mt-2 font-display text-3xl">Hồ Tuyền Lâm</h3><p class="mt-2 text-sm text-white/75">Một buổi chiều không cần kế hoạch.</p></div></article>
-          <article class="group relative min-h-[410px] overflow-hidden rounded-2xl"><img class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1000&q=85" alt="Đồi cây xanh mờ sương"><div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/5 to-transparent"></div><div class="absolute inset-x-0 bottom-0 p-6"><p class="eyebrow text-white/70">02 · Tinh sương</p><h3 class="mt-2 font-display text-3xl">Cầu Đất</h3><p class="mt-2 text-sm text-white/75">Đi sớm để săn mây, hoặc chỉ để thở.</p></div></article>
-          <article class="group relative min-h-[410px] overflow-hidden rounded-2xl md:col-span-2 lg:col-span-1"><img class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1000&q=85" alt="Cà phê nóng"><div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/5 to-transparent"></div><div class="absolute inset-x-0 bottom-0 p-6"><p class="eyebrow text-white/70">03 · Ấm áp</p><h3 class="mt-2 font-display text-3xl">Một quán cà phê</h3><p class="mt-2 text-sm text-white/75">Túi Mơ To, khi vẫn còn dư thời gian.</p></div></article>
+          <article class="group relative min-h-[410px] overflow-hidden rounded-2xl"><picture class="absolute inset-0"><source srcset="assets/tuyen-lam.avif" type="image/avif"><source srcset="assets/tuyen-lam.webp" type="image/webp"><img class="h-full w-full object-cover transition duration-700 group-hover:scale-105" src="assets/tuyen-lam.jpg" alt="Hồ Tuyền Lâm giữa rừng thông" width="1536" height="1024" loading="lazy"></picture><div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/5 to-transparent"></div><div class="absolute inset-x-0 bottom-0 p-6"><p class="eyebrow text-white/70">01 · Bình yên</p><h3 class="mt-2 font-display text-3xl">Hồ Tuyền Lâm</h3><p class="mt-2 text-sm text-white/75">Một buổi chiều không cần kế hoạch.</p></div></article>
+          <article class="group relative min-h-[410px] overflow-hidden rounded-2xl"><picture class="absolute inset-0"><source srcset="assets/cau-dat.avif" type="image/avif"><source srcset="assets/cau-dat.webp" type="image/webp"><img class="h-full w-full object-cover transition duration-700 group-hover:scale-105" src="assets/cau-dat.jpg" alt="Đồi chè Cầu Đất trong sương sớm" width="1536" height="1024" loading="lazy"></picture><div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/5 to-transparent"></div><div class="absolute inset-x-0 bottom-0 p-6"><p class="eyebrow text-white/70">02 · Tinh sương</p><h3 class="mt-2 font-display text-3xl">Cầu Đất</h3><p class="mt-2 text-sm text-white/75">Đi sớm để săn mây, hoặc chỉ để thở.</p></div></article>
+          <article class="group relative min-h-[410px] overflow-hidden rounded-2xl md:col-span-2 lg:col-span-1"><picture class="absolute inset-0"><source srcset="assets/coffee.avif" type="image/avif"><source srcset="assets/coffee.webp" type="image/webp"><img class="h-full w-full object-cover transition duration-700 group-hover:scale-105" src="assets/coffee.jpg" alt="Cà phê nóng bên cửa sổ ở Đà Lạt" width="1536" height="1024" loading="lazy"></picture><div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/5 to-transparent"></div><div class="absolute inset-x-0 bottom-0 p-6"><p class="eyebrow text-white/70">03 · Ấm áp</p><h3 class="mt-2 font-display text-3xl">Một quán cà phê</h3><p class="mt-2 text-sm text-white/75">Túi Mơ To, khi vẫn còn dư thời gian.</p></div></article>
         </div>
 
         <div class="mt-20 border-t border-white/15 pt-12">
