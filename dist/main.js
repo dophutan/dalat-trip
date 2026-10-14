@@ -75,6 +75,8 @@ const plannerDayTabs = document.getElementById('planner-day-tabs');
 const tripStartDate = document.getElementById('trip-start-date');
 const tripEndDate = document.getElementById('trip-end-date');
 const plannerDuration = document.getElementById('planner-duration');
+const plannerDayTotal = document.getElementById('planner-day-total');
+const plannerTripTotal = document.getElementById('planner-trip-total');
 const plannerClear = document.getElementById('planner-clear');
 const plannerSave = document.getElementById('planner-save');
 const plannerStorageKey = 'dalat-personal-itinerary';
@@ -126,6 +128,30 @@ function setPlannerFormState(enabled) {
   plannerForm.classList.toggle('opacity-50', !enabled);
 }
 
+function getEntryCost(entry) {
+  const cost = Number(entry.cost);
+  return Number.isFinite(cost) && cost > 0 ? cost : 0;
+}
+
+function formatCurrency(amount) {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+    maximumFractionDigits: 0
+  }).format(amount);
+}
+
+function renderTotals() {
+  const dayTotal = activePlannerDay
+    ? personalPlan.days[activePlannerDay].reduce((total, entry) => total + getEntryCost(entry), 0)
+    : 0;
+  const tripTotal = Object.values(personalPlan.days)
+    .flat()
+    .reduce((total, entry) => total + getEntryCost(entry), 0);
+  plannerDayTotal.textContent = formatCurrency(dayTotal);
+  plannerTripTotal.textContent = formatCurrency(tripTotal);
+}
+
 function syncTripDays() {
   const count = getTripDayCount();
   const invalidRange = tripStartDate.value && tripEndDate.value && count === 0;
@@ -174,6 +200,7 @@ function renderPlannerDays() {
 function renderPlan() {
   const entries = activePlannerDay ? personalPlan.days[activePlannerDay].sort((a, b) => a.time.localeCompare(b.time)) : [];
   plannerList.replaceChildren();
+  renderTotals();
   plannerEmpty.classList.toggle('hidden', entries.length > 0);
   if (!activePlannerDay) {
     plannerEmpty.textContent = 'Chọn ngày đi và ngày về để tạo lịch theo từng ngày.';
@@ -199,6 +226,18 @@ function renderPlan() {
       note.className = 'mt-1 text-sm leading-5 text-pine/60';
       note.textContent = entry.note;
       copy.append(note);
+    }
+    if (entry.address) {
+      const address = document.createElement('p');
+      address.className = 'mt-1 text-sm leading-5 text-pine/60';
+      address.textContent = `📍 ${entry.address}`;
+      copy.append(address);
+    }
+    if (getEntryCost(entry)) {
+      const cost = document.createElement('p');
+      cost.className = 'mt-2 text-sm font-semibold text-clay';
+      cost.textContent = formatCurrency(getEntryCost(entry));
+      copy.append(cost);
     }
 
     const remove = document.createElement('button');
@@ -241,8 +280,16 @@ plannerForm.addEventListener('submit', (event) => {
   event.preventDefault();
   const time = document.getElementById('planner-time');
   const place = document.getElementById('planner-place');
+  const address = document.getElementById('planner-address');
+  const cost = document.getElementById('planner-cost');
   const note = document.getElementById('planner-note');
-  personalPlan.days[activePlannerDay].push({ time: time.value, place: place.value.trim(), note: note.value.trim() });
+  personalPlan.days[activePlannerDay].push({
+    time: time.value,
+    place: place.value.trim(),
+    address: address.value.trim(),
+    cost: Number(cost.value) || 0,
+    note: note.value.trim()
+  });
   savePlan();
   plannerForm.reset();
   renderPlan();
