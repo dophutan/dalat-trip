@@ -36,3 +36,31 @@ dayTabs.forEach((tab) => {
     });
   });
 });
+
+const placeFilters = document.querySelectorAll('.place-filter');
+const placeItems = document.querySelectorAll('.place-item');
+const placeEmpty = document.getElementById('place-empty');
+
+placeFilters.forEach((filter) => {
+  filter.addEventListener('click', () => {
+    const category = filter.dataset.filter;
+    let visibleItems = 0;
+
+    placeFilters.forEach((item) => {
+      const selected = item === filter;
+      item.setAttribute('aria-pressed', String(selected));
+      item.classList.toggle('bg-white', selected);
+      item.classList.toggle('text-pine', selected);
+      item.classList.toggle('border-white/25', !selected);
+      item.classList.toggle('text-white/80', !selected);
+    });
+
+    placeItems.forEach((item) => {
+      const visible = category === 'all' || item.dataset.category === category;
+      item.classList.toggle('hidden', !visible);
+      if (visible) visibleItems += 1;
+    });
+
+    placeEmpty.classList.toggle('hidden', visibleItems > 0);
+  });
+});
