@@ -8,6 +8,7 @@
   <title>Đà Lạt, thong thả thôi — 3 ngày 2 đêm</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="tailwind.config.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
@@ -219,7 +220,10 @@
 
       <div class="mt-5 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
         <button id="planner-clear" class="rounded-xl px-4 py-3 text-sm font-semibold text-pine/60 transition hover:bg-white hover:text-clay" type="button">Xóa toàn bộ lịch</button>
-        <button id="planner-save" class="rounded-xl bg-pine px-5 py-3 text-sm font-semibold text-white transition hover:bg-moss" type="button">Lưu lịch trình</button>
+        <div class="flex gap-3">
+          <button id="planner-pdf" class="rounded-xl border border-pine/20 bg-white px-4 py-3 text-sm font-semibold text-pine transition hover:border-clay hover:text-clay" type="button">Tải PDF</button>
+          <button id="planner-save" class="rounded-xl bg-pine px-5 py-3 text-sm font-semibold text-white transition hover:bg-moss" type="button">Lưu lịch trình</button>
+        </div>
       </div>
     </div>
   </dialog>

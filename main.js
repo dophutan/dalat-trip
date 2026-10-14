@@ -79,6 +79,7 @@ const plannerDayTotal = document.getElementById('planner-day-total');
 const plannerTripTotal = document.getElementById('planner-trip-total');
 const plannerClear = document.getElementById('planner-clear');
 const plannerSave = document.getElementById('planner-save');
+const plannerPdf = document.getElementById('planner-pdf');
 const plannerCost = document.getElementById('planner-cost');
 const plannerStorageKey = 'dalat-personal-itinerary';
 let activePlannerDay = '';
@@ -151,11 +152,15 @@ function renderTotals() {
   const dayTotal = activePlannerDay
     ? personalPlan.days[activePlannerDay].reduce((total, entry) => total + getEntryCost(entry), 0)
     : 0;
-  const tripTotal = Object.values(personalPlan.days)
-    .flat()
-    .reduce((total, entry) => total + getEntryCost(entry), 0);
+  const tripTotal = getTripTotal();
   plannerDayTotal.textContent = formatCurrency(dayTotal);
   plannerTripTotal.textContent = formatCurrency(tripTotal);
+}
+
+function getTripTotal() {
+  return Object.values(personalPlan.days)
+    .flat()
+    .reduce((total, entry) => total + getEntryCost(entry), 0);
 }
 
 function syncTripDays() {
@@ -308,6 +313,97 @@ plannerSave.addEventListener('click', () => {
   savePlan();
   plannerSave.textContent = 'Đã lưu trên thiết bị';
   setTimeout(() => { plannerSave.textContent = 'Lưu lịch trình'; }, 1800);
+});
+
+plannerPdf.addEventListener('click', async () => {
+  if (!getTripDayCount()) {
+    plannerDuration.textContent = 'Hãy chọn ngày khởi hành và ngày trở về trước khi tải PDF.';
+    return;
+  }
+  if (typeof html2pdf !== 'function') {
+    plannerPdf.textContent = 'Không tải được PDF';
+    setTimeout(() => { plannerPdf.textContent = 'Tải PDF'; }, 1800);
+    return;
+  }
+
+  savePlan();
+  plannerPdf.disabled = true;
+  plannerPdf.textContent = 'Đang tạo PDF…';
+
+  const documentView = document.createElement('article');
+  documentView.style.cssText = 'position:fixed;left:-10000px;top:0;width:760px;padding:44px;background:#fff;color:#16342c;font-family:Inter,Arial,sans-serif;';
+  const heading = document.createElement('h1');
+  heading.textContent = 'Lịch trình Đà Lạt';
+  heading.style.cssText = 'margin:0;color:#16342c;font-family:Georgia,serif;font-size:32px;';
+  const dates = document.createElement('p');
+  dates.textContent = `${tripStartDate.value} → ${tripEndDate.value} · ${getTripDayCount()} ngày`;
+  dates.style.cssText = 'margin:10px 0 28px;color:#657e69;font-size:14px;';
+  documentView.append(heading, dates);
+
+  Object.keys(personalPlan.days).sort((a, b) => Number(a) - Number(b)).forEach((day) => {
+    const section = document.createElement('section');
+    section.style.cssText = 'margin:0 0 24px;break-inside:avoid;';
+    const title = document.createElement('h2');
+    title.textContent = `Ngày ${day} · ${formatTripDay(Number(day))}`;
+    title.style.cssText = 'margin:0 0 10px;padding-bottom:8px;border-bottom:2px solid #ded3bd;font-size:20px;';
+    section.append(title);
+
+    const entries = [...personalPlan.days[day]].sort((a, b) => a.time.localeCompare(b.time));
+    if (!entries.length) {
+      const empty = document.createElement('p');
+      empty.textContent = 'Chưa có điểm dừng.';
+      empty.style.cssText = 'color:#657e69;font-size:13px;';
+      section.append(empty);
+    }
+    entries.forEach((entry) => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:grid;grid-template-columns:74px 1fr auto;gap:12px;padding:10px 0;border-bottom:1px solid #ece7dc;font-size:14px;';
+      const time = document.createElement('strong');
+      time.textContent = entry.time;
+      time.style.color = '#c76d52';
+      const details = document.createElement('div');
+      const place = document.createElement('strong');
+      place.textContent = entry.place;
+      details.append(place);
+      [entry.address && `Địa chỉ: ${entry.address}`, entry.note].filter(Boolean).forEach((text) => {
+        const extra = document.createElement('p');
+        extra.textContent = text;
+        extra.style.cssText = 'margin:3px 0 0;color:#657e69;font-size:12px;';
+        details.append(extra);
+      });
+      const cost = document.createElement('span');
+      cost.textContent = getEntryCost(entry) ? formatCurrency(getEntryCost(entry)) : '';
+      cost.style.cssText = 'font-weight:600;color:#c76d52;white-space:nowrap;';
+      row.append(time, details, cost);
+      section.append(row);
+    });
+    const dayTotal = document.createElement('p');
+    dayTotal.textContent = `Tổng ngày ${day}: ${formatCurrency(personalPlan.days[day].reduce((sum, entry) => sum + getEntryCost(entry), 0))}`;
+    dayTotal.style.cssText = 'margin:10px 0 0;text-align:right;font-weight:700;';
+    section.append(dayTotal);
+    documentView.append(section);
+  });
+
+  const total = document.createElement('p');
+  total.textContent = `Tổng chi phí chuyến đi: ${formatCurrency(getTripTotal())}`;
+  total.style.cssText = 'margin:8px 0 0;padding:16px;background:#16342c;color:#fff;font-size:18px;font-weight:700;text-align:right;';
+  documentView.append(total);
+  document.body.append(documentView);
+
+  try {
+    await html2pdf().set({
+      margin: 8,
+      filename: `lich-trinh-da-lat-${tripStartDate.value || 'ca-nhan'}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['css', 'legacy'] }
+    }).from(documentView).save();
+  } finally {
+    documentView.remove();
+    plannerPdf.disabled = false;
+    plannerPdf.textContent = 'Tải PDF';
+  }
 });
 
 plannerClear.addEventListener('click', () => {
