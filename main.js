@@ -79,7 +79,7 @@ const plannerDayTotal = document.getElementById('planner-day-total');
 const plannerTripTotal = document.getElementById('planner-trip-total');
 const plannerClear = document.getElementById('planner-clear');
 const plannerSave = document.getElementById('planner-save');
-const plannerPdf = document.getElementById('planner-pdf');
+const plannerImage = document.getElementById('planner-image');
 const plannerCost = document.getElementById('planner-cost');
 const plannerStorageKey = 'dalat-personal-itinerary';
 let activePlannerDay = '';
@@ -315,23 +315,23 @@ plannerSave.addEventListener('click', () => {
   setTimeout(() => { plannerSave.textContent = 'Lưu lịch trình'; }, 1800);
 });
 
-plannerPdf.addEventListener('click', async () => {
+plannerImage.addEventListener('click', async () => {
   if (!getTripDayCount()) {
-    plannerDuration.textContent = 'Hãy chọn ngày khởi hành và ngày trở về trước khi tải PDF.';
+    plannerDuration.textContent = 'Hãy chọn ngày khởi hành và ngày trở về trước khi lưu ảnh.';
     return;
   }
-  if (typeof html2pdf !== 'function') {
-    plannerPdf.textContent = 'Không tải được PDF';
-    setTimeout(() => { plannerPdf.textContent = 'Tải PDF'; }, 1800);
+  if (typeof html2canvas !== 'function') {
+    plannerImage.textContent = 'Không tải được ảnh';
+    setTimeout(() => { plannerImage.textContent = 'Lưu ảnh PNG'; }, 1800);
     return;
   }
 
   savePlan();
-  plannerPdf.disabled = true;
-  plannerPdf.textContent = 'Đang tạo PDF…';
+  plannerImage.disabled = true;
+  plannerImage.textContent = 'Đang tạo ảnh…';
 
   const documentView = document.createElement('article');
-  documentView.style.cssText = 'position:fixed;left:0;top:0;z-index:-1;width:760px;padding:44px;background:#fff;color:#16342c;font-family:Inter,Arial,sans-serif;';
+  documentView.style.cssText = 'position:fixed;left:0;top:0;z-index:9999;width:760px;min-height:100vh;box-sizing:border-box;padding:44px;background:#fff;color:#16342c;font-family:Inter,Arial,sans-serif;';
   const heading = document.createElement('h1');
   heading.textContent = 'Lịch trình Đà Lạt';
   heading.style.cssText = 'margin:0;color:#16342c;font-family:Georgia,serif;font-size:32px;';
@@ -392,18 +392,29 @@ plannerPdf.addEventListener('click', async () => {
 
   try {
     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-    await html2pdf().set({
-      margin: 8,
-      filename: `lich-trinh-da-lat-${tripStartDate.value || 'ca-nhan'}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      pagebreak: { mode: ['css', 'legacy'] }
-    }).from(documentView).save();
+    const canvas = await html2canvas(documentView, {
+      backgroundColor: '#ffffff',
+      scale: 2,
+      logging: false,
+      useCORS: true
+    });
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+    if (!blob) throw new Error('Không thể tạo tệp ảnh.');
+    const downloadUrl = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = `lich-trinh-da-lat-${tripStartDate.value || 'ca-nhan'}.png`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+  } catch (error) {
+    plannerImage.textContent = 'Không tạo được ảnh';
+    setTimeout(() => { plannerImage.textContent = 'Lưu ảnh PNG'; }, 1800);
   } finally {
     documentView.remove();
-    plannerPdf.disabled = false;
-    plannerPdf.textContent = 'Tải PDF';
+    plannerImage.disabled = false;
+    if (plannerImage.textContent === 'Đang tạo ảnh…') plannerImage.textContent = 'Lưu ảnh PNG';
   }
 });
 
