@@ -223,7 +223,7 @@ function formatPersonalTripDay(dayNumber) {
 }
 
 function hasPersonalItinerary() {
-  return getPersonalTripDayCount() > 0 && Object.values(personalPlan.days).some((entries) => entries.length > 0);
+  return getPersonalTripDayCount() > 0;
 }
 
 function renderItineraryView() {
