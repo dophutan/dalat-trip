@@ -39,6 +39,27 @@ body {
   display: none;
 }
 
+.planner-dialog::backdrop {
+  background: rgb(8 25 20 / .72);
+  backdrop-filter: blur(5px);
+}
+
+.planner-dialog[open] {
+  animation: planner-enter .2s ease-out;
+}
+
+.planner-entry {
+  display: grid;
+  grid-template-columns: 68px 1fr auto;
+  gap: 12px;
+  align-items: start;
+}
+
+@keyframes planner-enter {
+  from { opacity: 0; transform: translateY(10px) scale(.98); }
+  to { opacity: 1; transform: none; }
+}
+
 @media (max-width: 639px) {
   body {
     overflow-x: hidden;
@@ -46,5 +67,10 @@ body {
 
   .place-item {
     min-height: 148px;
+  }
+
+  .planner-entry {
+    grid-template-columns: 58px 1fr auto;
+    gap: 9px;
   }
 }

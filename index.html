@@ -24,7 +24,7 @@
         <a class="transition hover:text-white" href="#hanh-trinh">Hành trình</a>
         <a class="transition hover:text-white" href="#diem-den">Điểm đến</a>
         <a class="transition hover:text-white" href="#chi-phi">Ngân sách</a>
-        <a class="rounded-full bg-white px-5 py-2.5 text-pine transition hover:bg-sand" href="#lien-he">Lưu lịch trình</a>
+        <button class="rounded-full bg-white px-5 py-2.5 text-pine transition hover:bg-sand" type="button" data-open-planner>Lên lịch trình</button>
       </div>
       <button id="menu-button" class="grid h-10 w-10 place-items-center rounded-full border border-white/30 text-white md:hidden" aria-expanded="false" aria-controls="mobile-menu" aria-label="Mở menu">☰</button>
     </nav>
@@ -177,9 +177,47 @@
 
     <section id="lien-he" class="relative overflow-hidden bg-clay px-6 py-24 text-center text-white lg:px-8 lg:py-28">
       <div class="absolute -left-24 -top-24 h-64 w-64 rounded-full border border-white/15"></div><div class="absolute -bottom-32 -right-20 h-80 w-80 rounded-full border border-white/15"></div>
-      <div class="relative mx-auto max-w-2xl"><p class="eyebrow text-[#f7d8bc]">Sẵn sàng lên đường?</p><h2 class="mt-5 font-display text-4xl leading-tight tracking-[-.035em] sm:text-6xl">Để Đà Lạt chậm lại<br>cùng bạn.</h2><p class="mx-auto mt-6 max-w-lg text-white/80">Lưu lại hành trình này, rồi chỉ việc chọn ngày và mang theo một chiếc áo khoác đủ ấm.</p><a href="mailto:?subject=Lịch%20trình%20Đà%20Lạt%203%20ngày%202%20đêm" class="mt-9 inline-block rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-pine transition hover:bg-[#f5eadc]">Gửi lịch trình cho tôi</a></div>
+      <div class="relative mx-auto max-w-2xl"><p class="eyebrow text-[#f7d8bc]">Sẵn sàng lên đường?</p><h2 class="mt-5 font-display text-4xl leading-tight tracking-[-.035em] sm:text-6xl">Để Đà Lạt chậm lại<br>cùng bạn.</h2><p class="mx-auto mt-6 max-w-lg text-white/80">Tự chọn giờ đi, điểm đến và ghi chú riêng cho từng ngày. Lịch của bạn được lưu trên thiết bị này.</p><button type="button" data-open-planner class="mt-9 inline-block rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-pine transition hover:bg-[#f5eadc]">Tự lên lịch trình</button></div>
     </section>
   </main>
+
+  <dialog id="planner-dialog" class="planner-dialog w-[min(720px,calc(100%-2rem))] rounded-3xl bg-mist p-0 text-pine shadow-2xl">
+    <div class="max-h-[88dvh] overflow-y-auto p-5 sm:p-8">
+      <div class="flex items-start justify-between gap-4">
+        <div><p class="eyebrow text-clay">Lịch của bạn</p><h2 class="mt-2 font-display text-3xl sm:text-4xl">Tự lên kế hoạch theo giờ</h2><p class="mt-3 text-sm leading-6 text-pine/65">Thêm địa điểm và ghi chú tùy ý. Dữ liệu chỉ lưu trong trình duyệt của bạn.</p></div>
+        <button class="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-pine/15 text-xl transition hover:bg-white" type="button" data-close-planner aria-label="Đóng lịch trình">×</button>
+      </div>
+
+      <div class="mt-7 grid gap-4 rounded-2xl bg-white p-4 sm:grid-cols-2">
+        <label class="text-sm font-semibold">Ngày khởi hành<input id="trip-start-date" class="mt-2 block w-full rounded-xl border border-pine/15 bg-mist px-3 py-2.5 font-normal outline-none focus:border-clay" type="date"></label>
+        <label class="text-sm font-semibold">Tên chuyến đi<input id="trip-name" class="mt-2 block w-full rounded-xl border border-pine/15 bg-mist px-3 py-2.5 font-normal outline-none focus:border-clay" type="text" placeholder="Ví dụ: Đà Lạt tháng 12"></label>
+      </div>
+
+      <div class="mt-6 flex gap-2 overflow-x-auto pb-2" role="tablist" aria-label="Chọn ngày trong lịch cá nhân">
+        <button class="planner-day whitespace-nowrap rounded-full bg-pine px-4 py-2.5 text-sm font-semibold text-white" data-planner-day="1" type="button" aria-selected="true">Ngày 1</button>
+        <button class="planner-day whitespace-nowrap rounded-full border border-pine/15 bg-white px-4 py-2.5 text-sm font-semibold text-pine" data-planner-day="2" type="button" aria-selected="false">Ngày 2</button>
+        <button class="planner-day whitespace-nowrap rounded-full border border-pine/15 bg-white px-4 py-2.5 text-sm font-semibold text-pine" data-planner-day="3" type="button" aria-selected="false">Ngày 3</button>
+      </div>
+
+      <div id="planner-list" class="mt-5 space-y-3" aria-live="polite"></div>
+      <p id="planner-empty" class="mt-5 rounded-2xl border border-dashed border-pine/20 p-6 text-center text-sm text-pine/60">Ngày này chưa có điểm dừng. Thêm mốc đầu tiên bên dưới nhé.</p>
+
+      <form id="planner-form" class="mt-5 rounded-2xl bg-pine p-4 text-white sm:p-5">
+        <p class="eyebrow text-sand">Thêm một mốc</p>
+        <div class="mt-3 grid gap-3 sm:grid-cols-[110px_1fr]">
+          <label class="text-sm">Giờ đi<input id="planner-time" class="mt-1.5 block w-full rounded-xl border border-white/20 bg-white/10 px-3 py-2.5 text-white outline-none [color-scheme:dark]" type="time" required></label>
+          <label class="text-sm">Đi đâu?<input id="planner-place" class="mt-1.5 block w-full rounded-xl border border-white/20 bg-white/10 px-3 py-2.5 text-white placeholder:text-white/50 outline-none" type="text" placeholder="Ví dụ: Ga Đà Lạt" required></label>
+        </div>
+        <label class="mt-3 block text-sm">Ghi chú <span class="text-white/55">(không bắt buộc)</span><input id="planner-note" class="mt-1.5 block w-full rounded-xl border border-white/20 bg-white/10 px-3 py-2.5 text-white placeholder:text-white/50 outline-none" type="text" placeholder="Ví dụ: đặt xe trước 15 phút"></label>
+        <button class="mt-4 w-full rounded-xl bg-clay px-4 py-3 text-sm font-semibold transition hover:bg-[#ad573f]" type="submit">Thêm vào ngày này</button>
+      </form>
+
+      <div class="mt-5 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
+        <button id="planner-clear" class="rounded-xl px-4 py-3 text-sm font-semibold text-pine/60 transition hover:bg-white hover:text-clay" type="button">Xóa toàn bộ lịch</button>
+        <button id="planner-save" class="rounded-xl bg-pine px-5 py-3 text-sm font-semibold text-white transition hover:bg-moss" type="button">Lưu lịch trình</button>
+      </div>
+    </div>
+  </dialog>
 
   <footer class="bg-[#102a23] px-6 py-8 text-white/65 lg:px-8"><div class="mx-auto flex max-w-7xl flex-col justify-between gap-3 text-sm sm:flex-row"><p>© 2026 Dalat, slowly. Một hướng dẫn bỏ túi.</p><p class="font-mono text-xs uppercase tracking-wider">Made for unhurried days</p></div></footer>
   <script src="main.js"></script>
