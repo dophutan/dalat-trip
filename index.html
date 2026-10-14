@@ -26,12 +26,16 @@
         <a class="transition hover:text-white" href="#chi-phi">Ngân sách</a>
         <button class="rounded-full bg-white px-5 py-2.5 text-pine transition hover:bg-sand" type="button" data-open-planner>Lên lịch trình</button>
       </div>
-      <button id="menu-button" class="grid h-10 w-10 place-items-center rounded-full border border-white/30 text-white md:hidden" aria-expanded="false" aria-controls="mobile-menu" aria-label="Mở menu">☰</button>
+      <div class="flex items-center gap-2 md:hidden">
+        <button class="rounded-full bg-white px-3.5 py-2 text-xs font-semibold text-pine transition hover:bg-sand" type="button" data-open-planner>Lên lịch</button>
+        <button id="menu-button" class="grid h-10 w-10 place-items-center rounded-full border border-white/30 text-white" aria-expanded="false" aria-controls="mobile-menu" aria-label="Mở menu">☰</button>
+      </div>
     </nav>
     <div id="mobile-menu" class="mx-5 hidden rounded-2xl bg-pine p-5 text-white shadow-soft md:hidden">
       <a class="block border-b border-white/10 py-3" href="#hanh-trinh">Hành trình</a>
       <a class="block border-b border-white/10 py-3" href="#diem-den">Điểm đến</a>
-      <a class="block pt-3" href="#chi-phi">Ngân sách</a>
+      <a class="block border-b border-white/10 py-3" href="#chi-phi">Ngân sách</a>
+      <button class="mt-4 w-full rounded-xl bg-white px-4 py-3 text-sm font-semibold text-pine transition hover:bg-sand" type="button" data-open-planner>Lên lịch trình</button>
     </div>
   </header>
 
@@ -226,6 +230,8 @@
       </div>
     </div>
   </dialog>
+
+  <button id="scroll-top" class="fixed bottom-5 right-5 z-30 grid h-12 w-12 translate-y-4 place-items-center rounded-full bg-pine text-xl text-white opacity-0 shadow-soft transition duration-300 hover:bg-clay focus:outline-none focus:ring-2 focus:ring-clay focus:ring-offset-2 sm:bottom-7 sm:right-7" type="button" aria-label="Cuộn nhanh lên đầu trang" title="Lên đầu trang">↑</button>
 
   <footer class="bg-[#102a23] px-6 py-8 text-white/65 lg:px-8"><div class="mx-auto flex max-w-7xl flex-col justify-between gap-3 text-sm sm:flex-row"><p>© 2026 Dalat, slowly. Một hướng dẫn bỏ túi.</p><p class="font-mono text-xs uppercase tracking-wider">Made for unhurried days</p></div></footer>
   <script src="main.js"></script>

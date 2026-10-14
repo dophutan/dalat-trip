@@ -7,12 +7,25 @@ menuButton.addEventListener('click', () => {
   mobileMenu.classList.toggle('hidden');
 });
 
-mobileMenu.querySelectorAll('a').forEach((link) => {
+mobileMenu.querySelectorAll('a, [data-open-planner]').forEach((link) => {
   link.addEventListener('click', () => {
     mobileMenu.classList.add('hidden');
     menuButton.setAttribute('aria-expanded', 'false');
   });
 });
+
+const scrollTopButton = document.getElementById('scroll-top');
+
+function toggleScrollTopButton() {
+  const visible = window.scrollY > 480;
+  scrollTopButton.classList.toggle('opacity-0', !visible);
+  scrollTopButton.classList.toggle('translate-y-4', !visible);
+  scrollTopButton.classList.toggle('pointer-events-none', !visible);
+}
+
+scrollTopButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+window.addEventListener('scroll', toggleScrollTopButton, { passive: true });
+toggleScrollTopButton();
 
 const dayTabs = document.querySelectorAll('.day-tab');
 const dayPanels = document.querySelectorAll('.day-panel');
