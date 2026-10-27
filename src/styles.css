@@ -4,19 +4,125 @@
 
 html {
   scroll-behavior: smooth;
+  /* Keep anchor targets clear of the fixed header. */
+  scroll-padding-top: 88px;
+}
+
+.site-header {
+  transition: background-color .3s ease, box-shadow .3s ease, backdrop-filter .3s ease;
+}
+
+.site-nav {
+  transition: padding .3s ease;
+}
+
+.site-header.is-scrolled {
+  background: rgb(22 52 44 / .92);
+  box-shadow: 0 10px 30px rgb(8 25 20 / .18);
+  backdrop-filter: blur(10px);
+}
+
+.site-header.is-scrolled .site-nav {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+/* Header fog — structure and timing follow the classic CSS "fog animation" pen
+ * (#foglayer_01–03, each holding .image01 + .image02 side by side in a 200%-wide strip
+ * that slides -50% for a seamless loop). The fog PNGs are replaced by inline SVG noise. */
+.site-header > :not(.header-forest, .header-fog) {
+  position: relative;
+}
+
+/* Pine forest behind the scrolled header (the pen's .forest layer). Reuses the hero photo,
+ * which is already downloaded, under a pine tint so the nav stays readable. */
+.header-forest {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    linear-gradient(to right, rgb(16 42 35 / .82), rgb(22 52 44 / .62) 50%, rgb(16 42 35 / .82)),
+    url("assets/dalat-hero.jpg") center 42% / cover no-repeat;
+  background:
+    linear-gradient(to right, rgb(16 42 35 / .82), rgb(22 52 44 / .62) 50%, rgb(16 42 35 / .82)),
+    image-set(url("assets/dalat-hero.avif") type("image/avif"), url("assets/dalat-hero.webp") type("image/webp"), url("assets/dalat-hero.jpg") type("image/jpeg")) center 42% / cover no-repeat;
+  transition: opacity .6s ease;
+}
+
+.site-header.is-scrolled .header-forest {
+  opacity: 1;
+}
+
+.header-fog {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  filter: blur(2px) grayscale(.2) saturate(1.2) sepia(.2);
+  transition: opacity .6s ease;
+}
+
+.site-header.is-scrolled .header-fog {
+  opacity: 1;
+}
+
+.header-fog .fog {
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: flex;
+  width: 200%;
+  will-change: transform, opacity;
+}
+
+.header-fog .image01,
+.header-fog .image02 {
+  width: 50%;
+  height: 100%;
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+#foglayer_01 {
+  animation: foglayer-01-opacity 10s linear infinite, foglayer-move 15s linear infinite;
+}
+
+#foglayer_02,
+#foglayer_03 {
+  animation: foglayer-02-opacity 21s linear infinite, foglayer-move 13s linear infinite;
+}
+
+#foglayer_03 {
+  animation-name: foglayer-03-opacity, foglayer-move;
+  animation-duration: 21s, 19s;
+  animation-direction: normal, reverse;
+}
+
+#foglayer_01 .image01,
+#foglayer_01 .image02 {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cfilter id='f' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.0016 .028' numOctaves='4' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1.8 0 0 0 -.75'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23f%29'/%3E%3C/svg%3E");
+}
+
+#foglayer_02 .image01,
+#foglayer_02 .image02,
+#foglayer_03 .image01,
+#foglayer_03 .image02 {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cfilter id='f' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.0024 .035' numOctaves='4' seed='17' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1.8 0 0 0 -.75'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23f%29'/%3E%3C/svg%3E");
 }
 
 body {
   margin: 0;
-  background: #f5f3ed;
-  color: #16342c;
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  background: theme('colors.mist');
+  color: theme('colors.pine');
+  font-family: theme('fontFamily.sans');
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 .eyebrow {
-  font-family: 'DM Mono', ui-monospace, monospace;
+  font-family: theme('fontFamily.mono');
   font-size: 11px;
   font-weight: 500;
   letter-spacing: .2em;
@@ -48,8 +154,33 @@ body {
   backdrop-filter: blur(5px);
 }
 
+/* Only the planner body scrolls: lock the page behind the open dialog. */
+html:has(.planner-dialog[open]) {
+  overflow: hidden;
+}
+
+/* Hint that the planner body scrolls: soft fades at its top and bottom edges. */
+.planner-scroll {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 16px, #000 calc(100% - 16px), transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 16px, #000 calc(100% - 16px), transparent);
+}
+
+/* Open: the sheet rises and settles while the backdrop fades in.
+ * Close: main.js adds .is-closing, waits for planner-leave, then calls close(). */
 .planner-dialog[open] {
-  animation: planner-enter .2s ease-out;
+  animation: planner-enter .38s cubic-bezier(.2, .8, .2, 1);
+}
+
+.planner-dialog[open]::backdrop {
+  animation: backdrop-in .3s ease-out;
+}
+
+.planner-dialog[open].is-closing {
+  animation: planner-leave .22s cubic-bezier(.4, 0, 1, 1) forwards;
+}
+
+.planner-dialog[open].is-closing::backdrop {
+  animation: backdrop-out .22s ease-in forwards;
 }
 
 .planner-entry {
@@ -59,9 +190,299 @@ body {
   align-items: start;
 }
 
+/* ---------- Motion ----------
+ * Entrance motion uses the standalone `translate` property so it never fights
+ * Tailwind's `transform`-based hover lift on the same element. */
+
+.hero-rise {
+  animation: rise .7s cubic-bezier(.2, .7, .2, 1) var(--hero-delay, 0ms) both;
+}
+
+.hero-zoom {
+  animation: hero-zoom 1.4s cubic-bezier(.2, .7, .2, 1) both;
+}
+
+/* Hidden only once JS confirms it can reveal them (main.js adds .reveal-ready). */
+.reveal-ready [data-reveal]:not(.is-visible),
+.reveal-ready [data-reveal-group] > :not(.is-visible) {
+  opacity: 0;
+}
+
+.reveal-ready [data-reveal].is-visible,
+.reveal-ready [data-reveal-group] > .is-visible {
+  animation: rise .5s ease-out var(--reveal-delay, 0ms) both;
+}
+
+.panel-enter {
+  animation: fade-slide .25s ease-out both;
+}
+
+.item-enter {
+  animation: pop-in .3s ease-out var(--reveal-delay, 0ms) both;
+}
+
+.entry-enter {
+  animation: fade-slide .25s ease-out both;
+}
+
+.entry-leave {
+  animation: fade-out .2s ease-in both;
+}
+
+.menu-enter {
+  animation: menu-down .2s ease-out both;
+}
+
+.menu-leave {
+  animation: menu-up .15s ease-in both;
+}
+
+/* Click ripple (main.js adds a .ripple span at the pointer position). */
+[data-ripple] {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.ripple {
+  position: absolute;
+  z-index: -1;
+  border-radius: 9999px;
+  background: rgb(22 52 44 / .24);
+  pointer-events: none;
+  translate: -50% -50%;
+  animation: ripple .6s ease-out forwards;
+}
+
+.value-flash {
+  animation: value-flash .6s ease-out;
+}
+
+/* Hero mist: two soft bands drifting slowly across the photo (transform only). */
+.hero-mist {
+  overflow: hidden;
+}
+
+.hero-mist::before,
+.hero-mist::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 200%;
+  will-change: translate;
+  background:
+    radial-gradient(ellipse 22% 14% at 18% 58%, rgb(255 255 255 / .16), transparent 70%),
+    radial-gradient(ellipse 26% 12% at 52% 70%, rgb(255 255 255 / .12), transparent 70%),
+    radial-gradient(ellipse 20% 10% at 84% 48%, rgb(255 255 255 / .14), transparent 70%);
+  animation: mist-drift 60s linear infinite;
+}
+
+.hero-mist::after {
+  top: 12%;
+  opacity: .7;
+  animation-duration: 90s;
+  animation-direction: reverse;
+}
+
+/* Day tabs: a pine pill slides to the selected tab (main.js adds .has-indicator). */
+.day-tab-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 9999px;
+  background: theme('colors.pine');
+  pointer-events: none;
+}
+
+.day-tab-indicator.is-ready {
+  transition: translate .35s cubic-bezier(.2, .7, .2, 1), width .35s cubic-bezier(.2, .7, .2, 1);
+}
+
+.has-indicator .day-tab {
+  position: relative;
+  z-index: 1;
+  background-color: transparent;
+}
+
+/* Destination cards: image curtain on reveal, caption lift on hover. */
+.reveal-ready [data-reveal-group] > .place-card.is-visible > picture {
+  animation: curtain .9s cubic-bezier(.2, .7, .2, 1) var(--reveal-delay, 0ms) both;
+}
+
+.place-caption {
+  transition: translate .5s cubic-bezier(.2, .7, .2, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .place-card:hover .place-caption {
+    translate: 0 -8px;
+  }
+}
+
+/* Budget rows: dividers draw from left to right once the card is revealed. */
+.budget-rows > div + div {
+  position: relative;
+}
+
+.budget-rows > div + div::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: rgb(22 52 44 / .15);
+  transform-origin: left;
+}
+
+.reveal-ready [data-reveal]:not(.is-visible) .budget-rows > div + div::before {
+  scale: 0 1;
+}
+
+.reveal-ready [data-reveal].is-visible .budget-rows > div + div::before {
+  animation: draw-line .7s cubic-bezier(.2, .7, .2, 1) var(--line-delay, 200ms) both;
+}
+
+.budget-rows > div:nth-child(3)::before { --line-delay: 320ms; }
+.budget-rows > div:nth-child(4)::before { --line-delay: 440ms; }
+
+@keyframes rise {
+  from { opacity: 0; translate: 0 16px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@keyframes hero-zoom {
+  from { scale: 1.05; }
+  to { scale: 1; }
+}
+
+@keyframes fade-slide {
+  from { opacity: 0; translate: 0 8px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@keyframes pop-in {
+  from { opacity: 0; scale: .97; }
+  to { opacity: 1; scale: 1; }
+}
+
+@keyframes fade-out {
+  to { opacity: 0; translate: 12px 0; }
+}
+
+@keyframes menu-down {
+  from { opacity: 0; translate: 0 -8px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@keyframes menu-up {
+  to { opacity: 0; translate: 0 -8px; }
+}
+
+@keyframes value-flash {
+  0% { opacity: .35; }
+  100% { opacity: 1; }
+}
+
+@keyframes mist-drift {
+  from { translate: 0 0; }
+  to { translate: -50% 0; }
+}
+
+@keyframes foglayer-move {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+@keyframes foglayer-01-opacity {
+  0% { opacity: .1; }
+  22% { opacity: .5; }
+  40% { opacity: .28; }
+  58% { opacity: .4; }
+  80% { opacity: .16; }
+  100% { opacity: .1; }
+}
+
+@keyframes foglayer-02-opacity {
+  0% { opacity: .5; }
+  25% { opacity: .2; }
+  50% { opacity: .1; }
+  80% { opacity: .3; }
+  100% { opacity: .5; }
+}
+
+@keyframes foglayer-03-opacity {
+  0% { opacity: .8; }
+  27% { opacity: .2; }
+  52% { opacity: .6; }
+  68% { opacity: .3; }
+  100% { opacity: .8; }
+}
+
+@keyframes ripple {
+  from { scale: 0; opacity: 1; }
+  45% { opacity: .9; }
+  to { scale: 1; opacity: 0; }
+}
+
+@keyframes curtain {
+  from { clip-path: inset(100% 0 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes draw-line {
+  from { scale: 0 1; }
+  to { scale: 1 1; }
+}
+
 @keyframes planner-enter {
-  from { opacity: 0; transform: translateY(10px) scale(.98); }
+  from { opacity: 0; transform: translateY(28px) scale(.96); }
   to { opacity: 1; transform: none; }
+}
+
+@keyframes planner-leave {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(16px) scale(.97); }
+}
+
+@keyframes backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes backdrop-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: .01ms !important;
+  }
+
+  .reveal-ready [data-reveal]:not(.is-visible),
+  .reveal-ready [data-reveal-group] > :not(.is-visible) {
+    opacity: 1;
+  }
+
+  /* An infinite loop at near-zero duration would flicker; stop it outright. */
+  .hero-mist::before,
+  .hero-mist::after,
+  .header-fog .fog {
+    animation: none;
+  }
+
+  .header-fog .fog {
+    opacity: .3;
+  }
+
+  .reveal-ready [data-reveal]:not(.is-visible) .budget-rows > div + div::before {
+    scale: 1 1;
+  }
 }
 
 @media (max-width: 639px) {
